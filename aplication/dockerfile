@@ -1,0 +1,27 @@
+
+# PASO 1: Compilar la aplicación usando Maven y Java 25
+
+FROM maven:3.9-amazoncorretto-25 AS build
+WORKDIR /app
+
+# Copiar archivos de configuración y código fuente
+COPY pom.xml .
+COPY src ./src
+
+# Compilar omitiendo pruebas para no agotar la RAM de Render
+RUN mvn clean package -DskipTests
+
+
+# PASO 2: Crear la imagen de ejecución ligera con Java 25 JRE
+
+FROM amazoncorretto:25-alpine
+WORKDIR /app
+
+# Copiar el archivo JAR generado desde el paso anterior
+COPY --from=build /app/target/aplication-0.0.1-SNAPSHOT.jar app.jar
+
+# Exponer el puerto de Render
+EXPOSE 8080
+
+# Ejecutar Spring Boot optimizando el uso de memoria RAM
+ENTRYPOINT ["java", "-jar", "app.jar"]
