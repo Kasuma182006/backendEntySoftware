@@ -1,4 +1,4 @@
-package com.entysoftware.aplication.model.dto_entrada;
+package com.entysoftware.aplication.model.dto.dto_entrada;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

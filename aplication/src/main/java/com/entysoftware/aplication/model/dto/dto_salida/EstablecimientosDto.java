@@ -1,4 +1,4 @@
-package com.entysoftware.aplication.model.dto_salida;
+package com.entysoftware.aplication.model.dto.dto_salida;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
