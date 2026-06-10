@@ -2,6 +2,7 @@ package com.entysoftware.aplication.model;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,5 +24,7 @@ public class BaseInicial {
 
     private int Fk_id_establecimiento;
     private int valor; 
+    
+    @Column(insertable = false)
     private LocalDate fecha;
 }
