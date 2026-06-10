@@ -14,7 +14,7 @@ public class configurationCors {
                 // Permite CORS en todos los endpoints
                 registry.addMapping("/**")
                         // Cambia esta URL por el dominio de tu frontend en Render o Vercel
-                        .allowedOrigins("http://localhost:5173/") 
+                        .allowedOriginPatterns("*") 
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
