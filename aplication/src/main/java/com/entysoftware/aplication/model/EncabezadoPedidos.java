@@ -1,6 +1,8 @@
 package com.entysoftware.aplication.model;
 
+
 import java.time.LocalDate;
+
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,6 +26,7 @@ public class EncabezadoPedidos {
     private String tipo_pago;
     private String estado_pedido;
     private int valor_domicilio;
-    private int valor_total;
+    private int precio_total;
     private LocalDate fecha_pedido;
+    private String descripcion;
 }

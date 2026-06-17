@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.entysoftware.aplication.model.dto.BaseInicialDto;
 import com.entysoftware.aplication.service.CajaInterface;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/caja")
+@Slf4j
 public class CajaControler {
     
     private CajaInterface cajaInterface;
@@ -24,7 +27,7 @@ public class CajaControler {
     @PostMapping("/apertura")
     public ResponseEntity<?> postMethodName(@RequestBody BaseInicialDto base) {
         
-        
+        log.debug("guardando base: {} ", base);
         return cajaInterface.aperturaDia(base);
     }
     

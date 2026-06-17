@@ -1,7 +1,5 @@
-
-# PASO 1: Compilar la aplicación usando Maven y Java 25
-
-FROM maven:3.9-amazoncorretto-25 AS build
+# PASO 1: Compilar la aplicación usando Maven y Java 21 (Corregido)
+FROM maven:3.9.6-eclipse-temurin-21-jammy AS build
 WORKDIR /app
 
 # Copiar archivos de configuración y código fuente
@@ -12,12 +10,11 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 
-# PASO 2: Crear la imagen de ejecución ligera con Java 25 JRE
-
-FROM amazoncorretto:25-alpine
+# PASO 2: Crear la imagen de ejecución ligera con Java 21 JRE (Corregido)
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
-# Copiar el archivo JAR generado desde el paso anterior
+# Copiar el archivo JAR generado manteniendo tu nombre exacto
 COPY --from=build /app/target/aplication-0.0.1-SNAPSHOT.jar app.jar
 
 # Exponer el puerto de Render

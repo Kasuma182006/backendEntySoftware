@@ -1,8 +1,5 @@
 package com.entysoftware.aplication.service.service_Implement;
-
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +11,9 @@ import com.entysoftware.aplication.model.Establecimiento;
 import com.entysoftware.aplication.model.Inventario;
 import com.entysoftware.aplication.model.Mesas;
 import com.entysoftware.aplication.model.Propietarios;
-import com.entysoftware.aplication.model.dto.dto_entrada.LoginDto;
-import com.entysoftware.aplication.model.dto.dto_salida.EstablecimientosDto;
-import com.entysoftware.aplication.model.dto.dto_salida.LoginSuccesfulDto;
+import com.entysoftware.aplication.model.dto.EstablecimientosDto;
+import com.entysoftware.aplication.model.dto.LoginDto;
+import com.entysoftware.aplication.model.dto.LoginSuccesfulDto;
 import com.entysoftware.aplication.repository.CategoriasRepository;
 import com.entysoftware.aplication.repository.EmpleadosRepository;
 import com.entysoftware.aplication.repository.EstablecimientoRepository;
@@ -25,24 +22,35 @@ import com.entysoftware.aplication.repository.MesasRepository;
 import com.entysoftware.aplication.repository.PropietariosRepository;
 import com.entysoftware.aplication.service.LoginInterface;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 @Service
+@Slf4j
 public class LoginService implements LoginInterface {
     
     
-    @Autowired
-    private EstablecimientoRepository establecimientoRepository;
-    @Autowired
-    private EmpleadosRepository empleadosrepository;
-    @Autowired
-    private PropietariosRepository propietariosRepository;
-    @Autowired
-    private MesasRepository mesasRepository;
-    @Autowired 
-    private CategoriasRepository categoriasRepository;
-    @Autowired
-    private InventarioRepository inventarioRepository;
-
+   
+    private final EstablecimientoRepository establecimientoRepository;
+    
+    private final EmpleadosRepository empleadosrepository;
+    
+    private final PropietariosRepository propietariosRepository;
+    
+    private final MesasRepository mesasRepository;
+   
+    private final CategoriasRepository categoriasRepository;
+    
+    private final InventarioRepository inventarioRepository;
+    
+    public LoginService(EstablecimientoRepository establecimientoRepository, EmpleadosRepository empleadosRepository, PropietariosRepository propietariosRepository,MesasRepository mesasRepository, CategoriasRepository categoriasRepository,InventarioRepository inventarioRepository){
+        this.establecimientoRepository = establecimientoRepository;
+        this.empleadosrepository = empleadosRepository;
+        this.propietariosRepository = propietariosRepository;
+        this.mesasRepository = mesasRepository;
+        this.categoriasRepository = categoriasRepository;
+        this.inventarioRepository = inventarioRepository;
+    }
 
     public ResponseEntity<?> ubicarEstablecimiento(String identificacion)throws UsuarioNoEncontradoException{
         
@@ -59,7 +67,8 @@ public class LoginService implements LoginInterface {
             List<EstablecimientosDto> listaDtoEstablecimiento = establecimientosRecogidosDeLaTablaEstablecimiento.stream()
                                                                 .map(dto -> new EstablecimientosDto(dto.getNombre_establecimiento(),dto.getId_establecimiento()))
                                                                 .toList();
-                                                                
+
+            log.debug("Lista de establecimientos de empleado:{} ",listaDtoEstablecimiento);                                      
             return ResponseEntity.ok().body(listaDtoEstablecimiento);
 
 
@@ -71,7 +80,7 @@ public class LoginService implements LoginInterface {
                                                                     .map(dto -> new EstablecimientosDto(dto.getNombre_establecimiento(),dto.getId_establecimiento()))
                                                                     .toList();
 
-
+        log.debug("Lista de establecimientos del propietario:{} ",establecimientosDelPropietarioDto);
         return ResponseEntity.ok().body(establecimientosDelPropietarioDto);
     }
 
@@ -92,12 +101,13 @@ public class LoginService implements LoginInterface {
             if(empleado == null)throw new UsuarioNoEncontradoException("No se han encontrado resultados");
            
             LoginSuccesfulDto dtoLogin = new LoginSuccesfulDto(empleado.getNumero_identificacion(),empleado.getNombre(),empleado.getRol(),establecimientoSeleccionado.getId_establecimiento(),establecimientoSeleccionado.getEstado_establecimiento(),establecimientoSeleccionado.getNombre_establecimiento(),listaMesas,listaCategorias,listaInventario); 
+            log.debug("Login exitoso: {}",dtoLogin.getNombre());
             return ResponseEntity.ok(dtoLogin);
         }
 
        
         LoginSuccesfulDto dtoLogin = new LoginSuccesfulDto(propietario.getId_propietario(),propietario.getNombre(),"administrador", establecimientoSeleccionado.getId_establecimiento(), establecimientoSeleccionado.getEstado_establecimiento(), establecimientoSeleccionado.getNombre_establecimiento(),listaMesas,listaCategorias,listaInventario);
-
+        log.debug("Login exitoso: {}",dtoLogin.getNombre());
         return ResponseEntity.ok(dtoLogin);
     }
 

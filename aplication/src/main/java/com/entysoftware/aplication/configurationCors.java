@@ -1,8 +1,10 @@
 package com.entysoftware.aplication;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.lang.NonNull; // En Spring Boot 3 suele mapear desde org.springframework.lang o jakarta
 
 @Configuration
 public class configurationCors {
@@ -10,10 +12,9 @@ public class configurationCors {
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
+            public void addCorsMappings(@NonNull CorsRegistry registry) { // <-- Se añade @NonNull aquí
                 // Permite CORS en todos los endpoints
                 registry.addMapping("/**")
-                        // Cambia esta URL por el dominio de tu frontend en Render o Vercel
                         .allowedOriginPatterns("*") 
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
@@ -21,5 +22,4 @@ public class configurationCors {
             }
         };
     }
-
 }

@@ -18,6 +18,7 @@ public class CuerpoPedidos {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id_cuerpo;
     
-    private int FK_id_pedido;
-    private int Fk_id_inentario;
+    private Integer FK_id_pedido;
+    private Integer Fk_id_inventario;
+    private Integer cantidad;
 }

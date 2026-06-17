@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.entysoftware.aplication.customExceptions.EstablecimientoNoEncontradoException;
 import com.entysoftware.aplication.customExceptions.UsuarioNoEncontradoException;
-import com.entysoftware.aplication.model.dto.dto_entrada.LoginDto;
+import com.entysoftware.aplication.model.dto.LoginDto;
 
 public interface LoginInterface {
 
