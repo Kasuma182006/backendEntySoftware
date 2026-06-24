@@ -1,5 +1,6 @@
 package com.entysoftware.aplication.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,9 +17,13 @@ import lombok.NoArgsConstructor;
 public class Costos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_costos; 
+    @Column(name = "id_costos")
+    private Integer idCostos; 
 
-    private int Fk_id_establecimiento;
-    private int valor_costo;
+    @Column(name = "Fk_id_establecimiento")
+    private int idEstablecimiento;
+
+    @Column(name = "valor_costo")
+    private int valorCosto;
     
 }

@@ -2,7 +2,7 @@ package com.entysoftware.aplication.model;
 
 import java.time.LocalDate;
 
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,11 +19,16 @@ import lombok.NoArgsConstructor;
 public class Establecimiento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_establecimiento;
+    @Column(name = "id_establecimiento")
+    private Integer idEstablecimiento;
     
-    private String nombre_establecimiento;
-    private String FK_id_propietario;
-    private LocalDate fecha_creacion;
-    private String estado_establecimiento;
+    @Column(name = "nombre_establecimiento")
+    private String nombreEstablecimiento;
+    @Column(name = "FK_id_propietario")
+    private String idPropietario;
+    @Column(name = "fecha_creacion")
+    private LocalDate fechaCreacion;
+    @Column(name = "estado_establecimiento")
+    private String estadoEstablecimiento;
 
 }

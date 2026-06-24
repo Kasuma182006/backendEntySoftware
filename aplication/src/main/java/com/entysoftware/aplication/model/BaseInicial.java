@@ -3,7 +3,7 @@ package com.entysoftware.aplication.model;
 
 import java.time.LocalDate;
 
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,10 +21,14 @@ import lombok.NoArgsConstructor;
 public class BaseInicial {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_base; 
+    @Column(name = "id_base")
+    private Integer idBase; 
 
-    private int Fk_id_establecimiento;
-    private int valor; 
+    @Column(name = "FK_id_establecimiento")
+    private int idEstablecimiento;
+    
+    @Column(name = "valor")
+    private int valorBaseInicial; 
     
     private LocalDate fecha;
 }

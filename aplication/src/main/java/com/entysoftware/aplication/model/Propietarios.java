@@ -2,6 +2,7 @@ package com.entysoftware.aplication.model;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -16,11 +17,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Propietarios {
     @Id
-    private  String id_propietario;
+    @Column(name = "id_propietario")
+    private  String idPropietario;
 
     private String nombre;
     private String password;
-    private LocalDate fecha_inicio_servicio;
-    private LocalDate fecha_fin_servicio;
+
+    @Column(name = "fecha_inicio_servicio")
+    private LocalDate fechaInicioServicio;
+
+    @Column(name = "fecha_fin_servicio")
+    private LocalDate fechaFinServicio;
+    
     private String estado;
 }

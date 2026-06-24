@@ -11,6 +11,6 @@ import java.util.List;
 
 
 public interface InventarioRepository extends JpaRepository<Inventario,Integer> {
-   @Query("SELECT i FROM Inventario i WHERE i.FK_categoria = :categoriaId")
+   @Query("SELECT i FROM Inventario i WHERE i.categoria = :categoriaId")
     List<Inventario> findByFK_categoria(@Param("categoriaId") int fK_categoria);
 }

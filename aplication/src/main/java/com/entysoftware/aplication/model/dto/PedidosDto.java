@@ -1,19 +1,37 @@
 package com.entysoftware.aplication.model.dto;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class PedidosDto {
-    
-    private int FK_id_mesa;
-    private int valor_domicilio;
-    private int precio_total;
-    private String descripcion;
-    private List<Map<String,Integer>> pedido;
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    private Integer idPedido;
+
+    private Integer idMesa;
+
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    private String tipoPago; 
+
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    private String estadoPedido; 
+
+    private Integer valorDomicilio; 
+    private Integer precioTotal; 
+
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDate fechaPedido; 
+
+    private String descripcion; 
+
+    private List<DetallesPedidoDto> pedido; 
+
 
 }

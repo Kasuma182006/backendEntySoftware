@@ -1,4 +1,5 @@
 package com.entysoftware.aplication.model;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,10 +16,15 @@ import lombok.NoArgsConstructor;
 public class Inventario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_inventario;
+    @Column(name = "id_inventario")
+    private Integer idInventario;
 
+    
     private String nombre;
-    private int FK_categoria;
+    
+    @Column(name = "FK_categoria")
+    private int categoria;
+
     private String descripcion;
     private int precio;
 

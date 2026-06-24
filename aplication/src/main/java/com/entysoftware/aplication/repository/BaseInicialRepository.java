@@ -13,7 +13,7 @@ import com.entysoftware.aplication.model.BaseInicial;
 
 
 public interface BaseInicialRepository extends JpaRepository<BaseInicial,Integer>{
- @Query("SELECT u FROM BaseInicial u WHERE u.Fk_id_establecimiento =:idForanea AND u.fecha =:fechaBusqueda")
+ @Query("SELECT u FROM BaseInicial u WHERE u.idEstablecimiento = :idForanea AND u.fecha =:fechaBusqueda")
     BaseInicial validarExistenciaBaseInicial(
         @Param("idForanea") int idForanea, 
         @Param("fechaBusqueda") LocalDate fechaBusqueda

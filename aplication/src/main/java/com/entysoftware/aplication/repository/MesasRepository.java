@@ -8,6 +8,6 @@ import java.util.List;
 
 
 public interface MesasRepository extends JpaRepository<Mesas,Integer>{
-    @Query("SELECT m FROM Mesas m WHERE m.FK_id_establecimiento = :idEstablecimiento")
+    @Query("SELECT m FROM Mesas m WHERE m.idEstablecimiento = :idEstablecimiento")
     List<Mesas> findByFK_id_establecimiento(@Param("idEstablecimiento") int fK_id_establecimiento);
 }

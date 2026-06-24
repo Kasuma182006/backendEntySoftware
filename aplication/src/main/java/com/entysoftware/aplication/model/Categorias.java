@@ -1,5 +1,6 @@
 package com.entysoftware.aplication.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,6 +20,8 @@ public class Categorias {
     private Integer id ;
     
     private String nombre;
-    private int Fk_id_establecimiento;
+
+    @Column(name = "Fk_id_establecimiento")
+    private int idEstablecimiento;
     
 }

@@ -21,7 +21,6 @@ import com.entysoftware.aplication.repository.InventarioRepository;
 import com.entysoftware.aplication.repository.MesasRepository;
 import com.entysoftware.aplication.repository.PropietariosRepository;
 import com.entysoftware.aplication.service.LoginInterface;
-
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -51,7 +50,8 @@ public class LoginService implements LoginInterface {
         this.categoriasRepository = categoriasRepository;
         this.inventarioRepository = inventarioRepository;
     }
-
+    
+    @SuppressWarnings("null")
     public ResponseEntity<?> ubicarEstablecimiento(String identificacion)throws UsuarioNoEncontradoException{
         
         List<Establecimiento> listaEstablecimientosPropietario = establecimientoRepository.buscarEstablecimiento(identificacion);
@@ -59,13 +59,13 @@ public class LoginService implements LoginInterface {
             List<Empleados> listaEstablecimientoEmpleado = empleadosrepository.establecimientosEmpleados(identificacion);
             if(listaEstablecimientoEmpleado.isEmpty()) throw new UsuarioNoEncontradoException("No se han encontrado coincidencias");
             List<Integer> listaEstablecimientosId = listaEstablecimientoEmpleado.stream()
-                                                                                    .map(Empleados::getFK_id_establecimiento)
+                                                                                    .map(Empleados::getIdEstablecimiento)
                                                                                     .toList();                        
           
             List<Establecimiento> establecimientosRecogidosDeLaTablaEstablecimiento = establecimientoRepository.findAllById(listaEstablecimientosId);
             
             List<EstablecimientosDto> listaDtoEstablecimiento = establecimientosRecogidosDeLaTablaEstablecimiento.stream()
-                                                                .map(dto -> new EstablecimientosDto(dto.getNombre_establecimiento(),dto.getId_establecimiento()))
+                                                                .map(dto -> new EstablecimientosDto(dto.getNombreEstablecimiento(),dto.getIdEstablecimiento()))
                                                                 .toList();
 
             log.debug("Lista de establecimientos de empleado:{} ",listaDtoEstablecimiento);                                      
@@ -77,21 +77,21 @@ public class LoginService implements LoginInterface {
         }
 
         List<EstablecimientosDto> establecimientosDelPropietarioDto = listaEstablecimientosPropietario.stream()
-                                                                    .map(dto -> new EstablecimientosDto(dto.getNombre_establecimiento(),dto.getId_establecimiento()))
+                                                                    .map(dto -> new EstablecimientosDto(dto.getNombreEstablecimiento(),dto.getIdEstablecimiento()))
                                                                     .toList();
 
         log.debug("Lista de establecimientos del propietario:{} ",establecimientosDelPropietarioDto);
         return ResponseEntity.ok().body(establecimientosDelPropietarioDto);
     }
 
-
+    @SuppressWarnings("null")
     public ResponseEntity<?> login(LoginDto usuario)throws UsuarioNoEncontradoException, EstablecimientoNoEncontradoException{
         Integer idEstablecimiento = Integer.valueOf(usuario.getId_establecimiento());
 
         Establecimiento establecimientoSeleccionado = establecimientoRepository.findById(idEstablecimiento).orElseThrow(()-> new EstablecimientoNoEncontradoException("No se ha encontrado el ID del establecimiento"));
         Propietarios propietario = propietariosRepository.loginPropietario(usuario.getIdentificacion(),usuario.getPassword());
-        List<Mesas> listaMesas = mesasRepository.findByFK_id_establecimiento(establecimientoSeleccionado.getId_establecimiento());
-        List<Categorias> listaCategorias = categoriasRepository.findByFk_id_establecimiento(establecimientoSeleccionado.getId_establecimiento());
+        List<Mesas> listaMesas = mesasRepository.findByFK_id_establecimiento(establecimientoSeleccionado.getIdEstablecimiento());
+        List<Categorias> listaCategorias = categoriasRepository.findByFk_id_establecimiento(establecimientoSeleccionado.getIdEstablecimiento());
         List<Inventario> listaInventario = listaCategorias.stream()
                                                            .flatMap(categoria -> inventarioRepository.findByFK_categoria(categoria.getId()).stream())
                                                            .toList(); 
@@ -100,13 +100,13 @@ public class LoginService implements LoginInterface {
             Empleados empleado = empleadosrepository.loginEmpleado(idEstablecimiento,usuario.getIdentificacion(),usuario.getPassword());
             if(empleado == null)throw new UsuarioNoEncontradoException("No se han encontrado resultados");
            
-            LoginSuccesfulDto dtoLogin = new LoginSuccesfulDto(empleado.getNumero_identificacion(),empleado.getNombre(),empleado.getRol(),establecimientoSeleccionado.getId_establecimiento(),establecimientoSeleccionado.getEstado_establecimiento(),establecimientoSeleccionado.getNombre_establecimiento(),listaMesas,listaCategorias,listaInventario); 
+            LoginSuccesfulDto dtoLogin = new LoginSuccesfulDto(empleado.getNumeroIdentificacion(),empleado.getNombre(),empleado.getRol(),establecimientoSeleccionado.getIdEstablecimiento(),establecimientoSeleccionado.getEstadoEstablecimiento(),establecimientoSeleccionado.getNombreEstablecimiento(),listaMesas,listaCategorias,listaInventario); 
             log.debug("Login exitoso: {}",dtoLogin.getNombre());
             return ResponseEntity.ok(dtoLogin);
         }
 
        
-        LoginSuccesfulDto dtoLogin = new LoginSuccesfulDto(propietario.getId_propietario(),propietario.getNombre(),"administrador", establecimientoSeleccionado.getId_establecimiento(), establecimientoSeleccionado.getEstado_establecimiento(), establecimientoSeleccionado.getNombre_establecimiento(),listaMesas,listaCategorias,listaInventario);
+        LoginSuccesfulDto dtoLogin = new LoginSuccesfulDto(propietario.getIdPropietario(),propietario.getNombre(),"administrador", establecimientoSeleccionado.getIdEstablecimiento(), establecimientoSeleccionado.getEstadoEstablecimiento(), establecimientoSeleccionado.getNombreEstablecimiento(),listaMesas,listaCategorias,listaInventario);
         log.debug("Login exitoso: {}",dtoLogin.getNombre());
         return ResponseEntity.ok(dtoLogin);
     }

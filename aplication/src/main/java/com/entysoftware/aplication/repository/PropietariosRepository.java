@@ -10,6 +10,6 @@ import com.entysoftware.aplication.model.Propietarios;
 
 public interface PropietariosRepository extends JpaRepository<Propietarios,String> {
     
-    @Query("SELECT u From Propietarios u Where u.id_propietario = :id_propietario AND u.password = :password")
+    @Query("SELECT u From Propietarios u Where u.idPropietario = :id_propietario AND u.password = :password")
     Propietarios loginPropietario(@Param("id_propietario") String id_propietario, @Param("password") String password);
 }

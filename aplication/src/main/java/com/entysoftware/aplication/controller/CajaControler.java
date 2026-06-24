@@ -25,7 +25,7 @@ public class CajaControler {
     }
 
     @PostMapping("/apertura")
-    public ResponseEntity<?> postMethodName(@RequestBody BaseInicialDto base) {
+    public ResponseEntity<String> postMethodName(@RequestBody BaseInicialDto base) {
         
         log.debug("guardando base: {} ", base);
         return cajaInterface.aperturaDia(base);

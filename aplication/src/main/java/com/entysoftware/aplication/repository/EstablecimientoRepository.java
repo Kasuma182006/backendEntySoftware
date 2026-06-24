@@ -10,7 +10,7 @@ import com.entysoftware.aplication.model.Establecimiento;
 
 public interface EstablecimientoRepository extends JpaRepository <Establecimiento,Integer> {
 
-    @Query("Select u from Establecimiento u Where FK_id_propietario = :identificacion")
+    @Query("Select u from Establecimiento u Where idPropietario = :identificacion")
     List<Establecimiento> buscarEstablecimiento(@Param("identificacion")String identificacion);
     
 }

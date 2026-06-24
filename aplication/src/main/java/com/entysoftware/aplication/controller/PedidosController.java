@@ -6,9 +6,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.entysoftware.aplication.model.dto.PedidosDto;
 import com.entysoftware.aplication.service.PedidosInterface;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+
 
 
 @RestController
@@ -22,10 +29,24 @@ public class PedidosController {
     }
 
     @PostMapping("/crear-pedido")
-    public ResponseEntity<?> crearPedido(@RequestBody PedidosDto pedido) {
+    public ResponseEntity<Integer> crearPedido(@RequestBody PedidosDto pedido) {
         
         
         return pedidosInterface.crearPedido(pedido);
     }
+
+
+    @GetMapping("/pedidos-hoy/{idEstablecimiento}")
+    public ResponseEntity<List<PedidosDto>> pedidosHoy(@PathVariable("idEstablecimiento")Integer idEstablecimiento){
+        return pedidosInterface.pedidosHoy(idEstablecimiento);
+    }
+    
+
+    @PatchMapping("/editar-pedido")
+    public ResponseEntity<String> editarPedido(@RequestBody PedidosDto Editarpedido){
+        return pedidosInterface.editarPedido(Editarpedido);
+    }
+    
+
     
 }

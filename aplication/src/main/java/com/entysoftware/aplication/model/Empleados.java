@@ -1,5 +1,6 @@
 package com.entysoftware.aplication.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,8 +19,11 @@ public class Empleados {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
-    private String numero_identificacion;
-    private Integer FK_id_establecimiento;
+    @Column(name = "numero_identificacion")
+    private String numeroIdentificacion;
+    @Column(name = "FK_id_establecimiento")
+    private Integer idEstablecimiento;
+    
     private String nombre;
     private String password;
     private String rol;
