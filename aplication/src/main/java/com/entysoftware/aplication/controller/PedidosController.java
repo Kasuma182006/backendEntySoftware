@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.entysoftware.aplication.model.dto.PedidosDto;
+import com.entysoftware.aplication.model.dto.pagosDTOs.FacturaPedidoDto;
+import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
 import com.entysoftware.aplication.service.PedidosInterface;
 
 import java.util.List;
@@ -47,6 +49,12 @@ public class PedidosController {
         return pedidosInterface.editarPedido(Editarpedido);
     }
     
-
+    @PostMapping("/pagar-pedido")
+    public ResponseEntity<FacturaPedidoDto> pagarPedido(@RequestBody PagarPedidoDto pagoPedido) {
+        
+        
+        return pedidosInterface.pagoPedido(pagoPedido);
+    }
+    
     
 }

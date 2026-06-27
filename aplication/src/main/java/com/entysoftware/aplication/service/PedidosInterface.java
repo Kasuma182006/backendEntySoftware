@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 
 
 import com.entysoftware.aplication.model.dto.PedidosDto;
+import com.entysoftware.aplication.model.dto.pagosDTOs.FacturaPedidoDto;
+import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
 
 public interface PedidosInterface {
     
@@ -14,4 +16,7 @@ public interface PedidosInterface {
     public ResponseEntity<List<PedidosDto>> pedidosHoy (Integer idEstablecimiento);
     
     public ResponseEntity<String> editarPedido(PedidosDto editarPedido);
+    
+    public ResponseEntity<FacturaPedidoDto> pagoPedido(PagarPedidoDto pago);
+
 }

@@ -1,8 +1,11 @@
 package com.entysoftware.aplication.service.service_Implement;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,6 +16,8 @@ import com.entysoftware.aplication.model.EncabezadoPedidos;
 import com.entysoftware.aplication.model.Mesas;
 import com.entysoftware.aplication.model.dto.DetallesPedidoDto;
 import com.entysoftware.aplication.model.dto.PedidosDto;
+import com.entysoftware.aplication.model.dto.pagosDTOs.FacturaPedidoDto;
+import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
 import com.entysoftware.aplication.repository.EncabezadoPedidosRepository;
 import com.entysoftware.aplication.repository.InventarioRepository;
 import com.entysoftware.aplication.repository.MesasRepository;
@@ -28,6 +33,8 @@ public class PedidoServiceImpl implements PedidosInterface {
     
     
 
+    
+
     private final EncabezadoPedidosRepository encabezadoPedidosRepository;
     
     private final InventarioRepository inventarioRepository;
@@ -40,6 +47,7 @@ public class PedidoServiceImpl implements PedidosInterface {
         this.inventarioRepository = inventarioRepository;
         this.mesasRepository = mesasRepository;
         this.mapperPedidosDto = mapperPedidosDto;
+        
 
     }
     
@@ -119,52 +127,67 @@ public class PedidoServiceImpl implements PedidosInterface {
 
     @SuppressWarnings("null")
     @Transactional
-public ResponseEntity<String> editarPedido(PedidosDto editarPedido) {
-    
-    
-    EncabezadoPedidos pedidoExistente = encabezadoPedidosRepository.findById(editarPedido.getIdPedido())
-        .orElseThrow(() -> new EntityNotFoundException("El pedido con ID " + editarPedido.getIdPedido() + " no existe"));
+    public ResponseEntity<String> editarPedido(PedidosDto editarPedido) {
+        
+        
+        EncabezadoPedidos pedidoExistente = encabezadoPedidosRepository.findById(editarPedido.getIdPedido())
+            .orElseThrow(() -> new EntityNotFoundException("El pedido con ID " + editarPedido.getIdPedido() + " no existe"));
 
-    
-    if (editarPedido.getIdMesa() != null) {
-        pedidoExistente.setIdMesa(mesasRepository.getReferenceById(editarPedido.getIdMesa()));
-    }
-    if (editarPedido.getTipoPago() != null) {
-        pedidoExistente.setTipoPago(editarPedido.getTipoPago());
-    }
-    if (editarPedido.getEstadoPedido() != null) {
-        pedidoExistente.setEstadoPedido(editarPedido.getEstadoPedido());
-    }
-    if (editarPedido.getValorDomicilio() != null) {
-        pedidoExistente.setValorDomicilio(editarPedido.getValorDomicilio());
-    }
-    if (editarPedido.getPrecioTotal() != null) {
-        pedidoExistente.setPrecioTotal(editarPedido.getPrecioTotal());
-    }
-    if (editarPedido.getDescripcion() != null) {
-        pedidoExistente.setDescripcion(editarPedido.getDescripcion());
-    }
-    
-    if (editarPedido.getPedido() != null && !editarPedido.getPedido().isEmpty()) {
-        List<CuerpoPedidos> listaCuerpoPedido = editarPedido.getPedido().stream()
-            .map(cuerpoPedido -> new CuerpoPedidos(
-                cuerpoPedido.getIdCuerpoPedido(),
-                pedidoExistente,
-                inventarioRepository.getReferenceById(cuerpoPedido.getIdProducto()),
-                cuerpoPedido.getCantidad()
-            ))
-            .toList(); 
+        
+        if (editarPedido.getIdMesa() != null) {
+            pedidoExistente.setIdMesa(mesasRepository.getReferenceById(editarPedido.getIdMesa()));
+        }
+        if (editarPedido.getTipoPago() != null) {
+            pedidoExistente.setTipoPago(editarPedido.getTipoPago());
+        }
+        if (editarPedido.getEstadoPedido() != null) {
+            pedidoExistente.setEstadoPedido(editarPedido.getEstadoPedido());
+        }
+        if (editarPedido.getValorDomicilio() != null) {
+            pedidoExistente.setValorDomicilio(editarPedido.getValorDomicilio());
+        }
+        if (editarPedido.getPrecioTotal() != null) {
+            pedidoExistente.setPrecioTotal(editarPedido.getPrecioTotal());
+        }
+        if (editarPedido.getDescripcion() != null) {
+            pedidoExistente.setDescripcion(editarPedido.getDescripcion());
+        }
+        
+        if (editarPedido.getPedido() != null && !editarPedido.getPedido().isEmpty()) {
+            List<CuerpoPedidos> listaCuerpoPedido = editarPedido.getPedido().stream()
+                .map(cuerpoPedido -> new CuerpoPedidos(
+                    cuerpoPedido.getIdCuerpoPedido(),
+                    pedidoExistente,
+                    inventarioRepository.getReferenceById(cuerpoPedido.getIdProducto()),
+                    cuerpoPedido.getCantidad()
+                ))
+                .toList(); 
 
-       
-        pedidoExistente.getDetalles().clear();
-        pedidoExistente.getDetalles().addAll(listaCuerpoPedido);
+        
+            pedidoExistente.getDetalles().clear();
+            pedidoExistente.getDetalles().addAll(listaCuerpoPedido);
+        }
+
+        
+        encabezadoPedidosRepository.save(pedidoExistente);
+        
+        return ResponseEntity.ok("Pedido actualizado");
+        
+
     }
-
     
-    encabezadoPedidosRepository.save(pedidoExistente);
-    
-    return ResponseEntity.ok("Pedido actualizado");
-}
+    @SuppressWarnings("null")
+    public ResponseEntity<FacturaPedidoDto> pagoPedido(PagarPedidoDto pago){
+        Optional <EncabezadoPedidos> pedido =  encabezadoPedidosRepository.findById(pago.getIdPedido());
+         
+        int calcularCambio =  pago.getPagoPedido() - pedido.get().getPrecioTotal();
+        pedido.get().setEstadoPedido("Pagado");
+        pedido.get().setTipoPago(pago.getTipoPago());
+        encabezadoPedidosRepository.save(pedido.get());
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String fechaYHora = LocalDateTime.now().format(formato);
 
+        return ResponseEntity.ok(new FacturaPedidoDto(pago.getIdPedido(),pedido.get().getIdMesa().getIdMesa(),pedido.get().getEstadoPedido(),pedido.get().getPrecioTotal(),calcularCambio,pedido.get().getTipoPago(),fechaYHora));
+    }
 
 }
