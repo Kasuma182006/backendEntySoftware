@@ -3,9 +3,9 @@ package com.entysoftware.aplication.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.entysoftware.aplication.model.dto.PedidosDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.FacturaPedidoDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
+import com.entysoftware.aplication.model.dto.pedidosDTOs.PedidosDto;
 import com.entysoftware.aplication.service.PedidosInterface;
 
 import java.util.List;

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.entysoftware.aplication.customExceptions.EstablecimientoNoEncontradoException;
 import com.entysoftware.aplication.customExceptions.UsuarioNoEncontradoException;
-import com.entysoftware.aplication.model.dto.LoginDto;
+import com.entysoftware.aplication.model.dto.loginDto.LoginDto;
 import com.entysoftware.aplication.service.LoginInterface;
 
 import lombok.extern.slf4j.Slf4j;

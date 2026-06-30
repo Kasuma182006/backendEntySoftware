@@ -1,7 +1,9 @@
-package com.entysoftware.aplication.model.dto;
+package com.entysoftware.aplication.model.dto.pedidosDTOs;
 
 import java.time.LocalDate;
 import java.util.List;
+
+
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

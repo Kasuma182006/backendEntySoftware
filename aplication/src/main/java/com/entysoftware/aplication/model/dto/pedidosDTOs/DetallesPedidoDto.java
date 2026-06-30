@@ -1,4 +1,4 @@
-package com.entysoftware.aplication.model.dto;
+package com.entysoftware.aplication.model.dto.pedidosDTOs;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

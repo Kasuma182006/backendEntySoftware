@@ -3,7 +3,7 @@ package com.entysoftware.aplication.mapper;
 import org.springframework.stereotype.Component;
 
 import com.entysoftware.aplication.model.EncabezadoPedidos;
-import com.entysoftware.aplication.model.dto.PedidosDto;
+import com.entysoftware.aplication.model.dto.pedidosDTOs.PedidosDto;
 
 @Component
 public class MapperPedidosDto {

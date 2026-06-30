@@ -5,7 +5,11 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class EstablecimientosDto {
-    private String nombre_establecimiento;
-    private Integer id_establecimiento;
+public class MesasDto {
+    
+    private Integer idMesa;
+    private String nombreMesa;
+    private Boolean estadoMesa;
+    
+
 }

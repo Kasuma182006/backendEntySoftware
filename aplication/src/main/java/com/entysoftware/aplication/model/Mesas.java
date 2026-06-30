@@ -19,6 +19,12 @@ public class Mesas {
     @Column(name = "FK_id_establecimiento")
     private Integer idEstablecimiento;
 
+    @Column(name = "nombre")
+    private String nombreMesa;
+    
+    @Column (name = "ocupada")
+    private Boolean estadoMesa;
+
     @JsonBackReference
     @OneToMany(mappedBy = "idMesa", fetch = FetchType.LAZY)
     private List<EncabezadoPedidos> encabezadoPedido; 
