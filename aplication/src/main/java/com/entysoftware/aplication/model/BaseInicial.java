@@ -25,7 +25,7 @@ public class BaseInicial {
     private Integer idBase; 
 
     @Column(name = "FK_id_establecimiento")
-    private int idEstablecimiento;
+    private Integer idEstablecimiento;
     
     @Column(name = "valor")
     private int valorBaseInicial; 

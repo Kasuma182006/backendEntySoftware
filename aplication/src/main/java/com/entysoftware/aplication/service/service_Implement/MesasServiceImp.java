@@ -12,14 +12,14 @@ import com.entysoftware.aplication.model.dto.MesasDto;
 import com.entysoftware.aplication.repository.MesasRepository;
 
 @Service
-public class MesasService {
+public class MesasServiceImp {
 
     
     private MesasRepository mesasRepository;
     
     private MapperMesasDto mapperMesasDto;
 
-    public MesasService(MesasRepository mesasRepository, MapperMesasDto mapperMesasDto){
+    public MesasServiceImp(MesasRepository mesasRepository, MapperMesasDto mapperMesasDto){
         this.mapperMesasDto = mapperMesasDto;
         this.mesasRepository = mesasRepository;
     }

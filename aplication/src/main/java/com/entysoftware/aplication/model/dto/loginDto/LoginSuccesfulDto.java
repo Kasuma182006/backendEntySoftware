@@ -22,6 +22,7 @@ public class LoginSuccesfulDto {
     private List<Mesas> mesas;
     private List<Categorias> categorias;
     private List<Inventario> inventario;
+    private String token;
 
-    
+
 }

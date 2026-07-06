@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class PedidoServiceImpl implements PedidosInterface {
+public class PedidoServiceImp implements PedidosInterface {
     
     
 
@@ -42,7 +42,7 @@ public class PedidoServiceImpl implements PedidosInterface {
     private final MesasRepository mesasRepository;
 
     private final MapperPedidosDto mapperPedidosDto;
-    public PedidoServiceImpl (EncabezadoPedidosRepository encabezadoPedidosRepository,InventarioRepository inventarioRepository,MesasRepository mesasRepository,MapperPedidosDto mapperPedidosDto){
+    public PedidoServiceImp (EncabezadoPedidosRepository encabezadoPedidosRepository,InventarioRepository inventarioRepository,MesasRepository mesasRepository,MapperPedidosDto mapperPedidosDto){
         this.encabezadoPedidosRepository = encabezadoPedidosRepository;
         this.inventarioRepository = inventarioRepository;
         this.mesasRepository = mesasRepository;
@@ -61,8 +61,8 @@ public class PedidoServiceImpl implements PedidosInterface {
         EncabezadoPedidos encabezadoPedido = new EncabezadoPedidos(
             null, 
             mesaProxy, 
-            "Efectivo", 
-            "En espera", 
+            "EFECTIVO", 
+            "EN ESPERA", 
             pedido.getValorDomicilio(), 
             pedido.getPrecioTotal(), 
             LocalDate.now(), 
@@ -70,7 +70,7 @@ public class PedidoServiceImpl implements PedidosInterface {
             new ArrayList<>()
         ); 
         
-        @SuppressWarnings("null")
+
         List<CuerpoPedidos> listaCuerpoPedido = pedido.getPedido().stream()
                                                         .map(cuerpoPedido -> new CuerpoPedidos(
                                                             null, 
@@ -138,7 +138,7 @@ public class PedidoServiceImpl implements PedidosInterface {
             pedidoExistente.setIdMesa(mesasRepository.getReferenceById(editarPedido.getIdMesa()));
         }
         if (editarPedido.getTipoPago() != null) {
-            pedidoExistente.setTipoPago(editarPedido.getTipoPago());
+            pedidoExistente.setTipoPago(editarPedido.getTipoPago().toUpperCase());
         }
         if (editarPedido.getEstadoPedido() != null) {
             pedidoExistente.setEstadoPedido(editarPedido.getEstadoPedido());
@@ -181,7 +181,7 @@ public class PedidoServiceImpl implements PedidosInterface {
         Optional <EncabezadoPedidos> pedido =  encabezadoPedidosRepository.findById(pago.getIdPedido());
          
         int calcularCambio =  pago.getPagoPedido() - pedido.get().getPrecioTotal();
-        pedido.get().setEstadoPedido("Pagado");
+        pedido.get().setEstadoPedido("PAGO");
         pedido.get().setTipoPago(pago.getTipoPago());
         encabezadoPedidosRepository.save(pedido.get());
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");

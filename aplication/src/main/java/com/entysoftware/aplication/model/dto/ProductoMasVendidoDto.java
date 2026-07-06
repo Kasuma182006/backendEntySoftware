@@ -5,8 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class BaseInicialDto {
-    private Integer idEstablecimiento;
-    private int valor;
-    
+public class ProductoMasVendidoDto {
+    private String nombreProducto;
+    private Long cantidadVendida;
 }

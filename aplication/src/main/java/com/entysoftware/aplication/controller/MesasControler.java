@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.entysoftware.aplication.model.dto.MesasDto;
-import com.entysoftware.aplication.service.service_Implement.MesasService;
+import com.entysoftware.aplication.service.service_Implement.MesasServiceImp;
 
 import java.util.List;
 
@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/mesas")
 public class MesasControler {
-    private final MesasService mesasService;
-    public MesasControler(MesasService mesasService){
+    private final MesasServiceImp mesasService;
+    public MesasControler(MesasServiceImp mesasService){
         this.mesasService = mesasService;
     }
     @GetMapping("/listar-mesas/{idEstablecimiento}")

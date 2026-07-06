@@ -30,7 +30,7 @@ public class CajaService implements CajaInterface {
 
         }*/
 
-        BaseInicial baseInicial = new BaseInicial(null,base.getFk_id_establecimiento(),base.getValor(),hoy);
+        BaseInicial baseInicial = new BaseInicial(null,base.getIdEstablecimiento(),base.getValor(),hoy);
         baseInicialRepository.save(baseInicial);
         log.debug("Se ha registrado la base del dia correctamente");
         return ResponseEntity.ok("La base inicial se ha guardado Correctamente");

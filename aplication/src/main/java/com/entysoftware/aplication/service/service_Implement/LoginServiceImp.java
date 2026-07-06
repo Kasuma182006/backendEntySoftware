@@ -20,13 +20,14 @@ import com.entysoftware.aplication.repository.EstablecimientoRepository;
 import com.entysoftware.aplication.repository.InventarioRepository;
 import com.entysoftware.aplication.repository.MesasRepository;
 import com.entysoftware.aplication.repository.PropietariosRepository;
+import com.entysoftware.aplication.security.JwtService;
 import com.entysoftware.aplication.service.LoginInterface;
 import lombok.extern.slf4j.Slf4j;
 
 
 @Service
 @Slf4j
-public class LoginService implements LoginInterface {
+public class LoginServiceImp implements LoginInterface {
     
     
    
@@ -41,23 +42,28 @@ public class LoginService implements LoginInterface {
     private final CategoriasRepository categoriasRepository;
     
     private final InventarioRepository inventarioRepository;
-    
-    public LoginService(EstablecimientoRepository establecimientoRepository, EmpleadosRepository empleadosRepository, PropietariosRepository propietariosRepository,MesasRepository mesasRepository, CategoriasRepository categoriasRepository,InventarioRepository inventarioRepository){
+
+    private final JwtService jwtService;
+
+    public LoginServiceImp(EstablecimientoRepository establecimientoRepository, EmpleadosRepository empleadosRepository, PropietariosRepository propietariosRepository,MesasRepository mesasRepository, CategoriasRepository categoriasRepository,InventarioRepository inventarioRepository, JwtService jwtService){
         this.establecimientoRepository = establecimientoRepository;
         this.empleadosrepository = empleadosRepository;
         this.propietariosRepository = propietariosRepository;
         this.mesasRepository = mesasRepository;
         this.categoriasRepository = categoriasRepository;
         this.inventarioRepository = inventarioRepository;
+        this.jwtService = jwtService;
     }
     
     @SuppressWarnings("null")
-    public ResponseEntity<?> ubicarEstablecimiento(String identificacion)throws UsuarioNoEncontradoException{
+    public ResponseEntity<List<EstablecimientosDto>> ubicarEstablecimiento(String identificacion){
         
         List<Establecimiento> listaEstablecimientosPropietario = establecimientoRepository.buscarEstablecimiento(identificacion);
         if(listaEstablecimientosPropietario.isEmpty()){
             List<Empleados> listaEstablecimientoEmpleado = empleadosrepository.establecimientosEmpleados(identificacion);
             if(listaEstablecimientoEmpleado.isEmpty()) throw new UsuarioNoEncontradoException("No se han encontrado coincidencias");
+            
+            
             List<Integer> listaEstablecimientosId = listaEstablecimientoEmpleado.stream()
                                                                                     .map(Empleados::getIdEstablecimiento)
                                                                                     .toList();                        
@@ -85,7 +91,7 @@ public class LoginService implements LoginInterface {
     }
 
     @SuppressWarnings("null")
-    public ResponseEntity<?> login(LoginDto usuario)throws UsuarioNoEncontradoException, EstablecimientoNoEncontradoException{
+    public ResponseEntity<LoginSuccesfulDto> login(LoginDto usuario){
         Integer idEstablecimiento = Integer.valueOf(usuario.getId_establecimiento());
 
         Establecimiento establecimientoSeleccionado = establecimientoRepository.findById(idEstablecimiento).orElseThrow(()-> new EstablecimientoNoEncontradoException("No se ha encontrado el ID del establecimiento"));
@@ -99,14 +105,15 @@ public class LoginService implements LoginInterface {
         if (propietario == null){
             Empleados empleado = empleadosrepository.loginEmpleado(idEstablecimiento,usuario.getIdentificacion(),usuario.getPassword());
             if(empleado == null)throw new UsuarioNoEncontradoException("No se han encontrado resultados");
-           
-            LoginSuccesfulDto dtoLogin = new LoginSuccesfulDto(empleado.getNumeroIdentificacion(),empleado.getNombre(),empleado.getRol(),establecimientoSeleccionado.getIdEstablecimiento(),establecimientoSeleccionado.getEstadoEstablecimiento(),establecimientoSeleccionado.getNombreEstablecimiento(),listaMesas,listaCategorias,listaInventario); 
+
+            String token = jwtService.generarToken(empleado.getNumeroIdentificacion(),empleado.getRol());
+            LoginSuccesfulDto dtoLogin = new LoginSuccesfulDto(empleado.getNumeroIdentificacion(),empleado.getNombre(),empleado.getRol(),establecimientoSeleccionado.getIdEstablecimiento(),establecimientoSeleccionado.getEstadoEstablecimiento(),establecimientoSeleccionado.getNombreEstablecimiento(),listaMesas,listaCategorias,listaInventario,token);
             log.debug("Login exitoso: {}",dtoLogin.getNombre());
             return ResponseEntity.ok(dtoLogin);
         }
 
-       
-        LoginSuccesfulDto dtoLogin = new LoginSuccesfulDto(propietario.getIdPropietario(),propietario.getNombre(),"administrador", establecimientoSeleccionado.getIdEstablecimiento(), establecimientoSeleccionado.getEstadoEstablecimiento(), establecimientoSeleccionado.getNombreEstablecimiento(),listaMesas,listaCategorias,listaInventario);
+        String token = jwtService.generarToken(propietario.getIdPropietario(),"administrador");
+        LoginSuccesfulDto dtoLogin = new LoginSuccesfulDto(propietario.getIdPropietario(),propietario.getNombre(),"administrador", establecimientoSeleccionado.getIdEstablecimiento(), establecimientoSeleccionado.getEstadoEstablecimiento(), establecimientoSeleccionado.getNombreEstablecimiento(),listaMesas,listaCategorias,listaInventario,token);
         log.debug("Login exitoso: {}",dtoLogin.getNombre());
         return ResponseEntity.ok(dtoLogin);
     }

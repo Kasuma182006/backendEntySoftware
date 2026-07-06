@@ -17,7 +17,39 @@ public interface EncabezadoPedidosRepository  extends JpaRepository<EncabezadoPe
        "JOIN FETCH d.idInventario " +
        "WHERE p.idEstablecimiento = :idEstablecimiento AND u.fechaPedido = :fecha")
     List<EncabezadoPedidos> buscarPedidosDeHoyConDetalles(
-        @Param("idEstablecimiento") Integer idEstablecimiento, 
+        @Param("idEstablecimiento") Integer idEstablecimiento,
+        @Param("fecha") LocalDate fecha
+    );
+
+    @Query("SELECT COUNT(u) FROM EncabezadoPedidos u " +
+       "WHERE u.idMesa.idEstablecimiento = :idEstablecimiento AND u.fechaPedido = :fecha")
+    Integer contarPedidosDelDia(
+        @Param("idEstablecimiento") Integer idEstablecimiento,
+        @Param("fecha") LocalDate fecha
+    );
+
+    @Query("SELECT COALESCE(SUM(u.precioTotal), 0)  - COALESCE(SUM(u.valorDomicilio),0) FROM EncabezadoPedidos u " +
+       "WHERE u.idMesa.idEstablecimiento = :idEstablecimiento " +
+       "AND u.fechaPedido = :fecha AND u.tipoPago = 'TRANSFERENCIA'")
+    Integer sumarIngresosTransferenciaDelDia(
+        @Param("idEstablecimiento") Integer idEstablecimiento,
+        @Param("fecha") LocalDate fecha
+    );
+
+    @Query("SELECT COALESCE(SUM(u.valorDomicilio), 0) FROM EncabezadoPedidos u " +
+       "WHERE u.idMesa.idEstablecimiento = :idEstablecimiento " +
+       "AND u.fechaPedido = :fecha")
+    Integer sumarIngresoDomicilio(
+        @Param("idEstablecimiento") Integer idEstablecimiento,
+        @Param("fecha") LocalDate fecha
+    );
+
+
+    @Query("SELECT COALESCE(SUM(u.precioTotal), 0) - COALESCE(SUM(u.valorDomicilio),0) FROM EncabezadoPedidos u " +
+       "WHERE u.idMesa.idEstablecimiento = :idEstablecimiento " +
+       "AND u.fechaPedido = :fecha AND u.tipoPago = 'EFECTIVO'")
+    Integer sumarIngresosEfectivoDelDia(
+        @Param("idEstablecimiento") Integer idEstablecimiento,
         @Param("fecha") LocalDate fecha
     );
 }

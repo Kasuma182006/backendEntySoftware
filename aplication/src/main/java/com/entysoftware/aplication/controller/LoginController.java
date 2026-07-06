@@ -3,12 +3,14 @@ package com.entysoftware.aplication.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.entysoftware.aplication.customExceptions.EstablecimientoNoEncontradoException;
-import com.entysoftware.aplication.customExceptions.UsuarioNoEncontradoException;
+import com.entysoftware.aplication.model.dto.loginDto.EstablecimientosDto;
 import com.entysoftware.aplication.model.dto.loginDto.LoginDto;
+import com.entysoftware.aplication.model.dto.loginDto.LoginSuccesfulDto;
 import com.entysoftware.aplication.service.LoginInterface;
 
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,36 +31,28 @@ public class LoginController {
     }
     
     @GetMapping("/buscar-establecimiento/{idPersona}")
-    public ResponseEntity<?> getMethodName(@PathVariable("idPersona") String idpersona) {
+    public ResponseEntity<List<EstablecimientosDto>> getMethodName(@PathVariable("idPersona") String idpersona) {
 
         log.debug("buscando establecimientos del siguiente id ... {} ",idpersona);
-        try{
 
             
-            return loginInterface.ubicarEstablecimiento(idpersona);
+        return loginInterface.ubicarEstablecimiento(idpersona);
 
-        }
-        catch(UsuarioNoEncontradoException e){
-            return ResponseEntity.status(404).body(e.getMessage());
-        }
+        
+       
         
     }
     
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDto usuario) {
+    public ResponseEntity<LoginSuccesfulDto> login(@RequestBody LoginDto usuario) {
         
         log.debug("login entrante: {} ", usuario);
 
-        try{
-            return loginInterface.login(usuario);
-        }
-        catch(UsuarioNoEncontradoException e){
-            return ResponseEntity.status(404).body(e.getMessage());
-        }
-        catch(EstablecimientoNoEncontradoException e){
-            return ResponseEntity.status(404).body(e.getMessage());
-        }
+        
+        return loginInterface.login(usuario);
+        
+       
     }
     
 
