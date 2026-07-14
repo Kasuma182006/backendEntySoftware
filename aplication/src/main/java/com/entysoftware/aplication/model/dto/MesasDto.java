@@ -8,6 +8,7 @@ import lombok.Data;
 public class MesasDto {
     
     private Integer idMesa;
+    private Integer idEstablecimiento;
     private String nombreMesa;
     private Boolean estadoMesa;
     

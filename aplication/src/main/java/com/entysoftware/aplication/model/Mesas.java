@@ -13,8 +13,9 @@ import lombok.Data;
 public class Mesas {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_mesa")
-    private Integer idMesa; 
+    private Integer idMesa;
 
     @Column(name = "FK_id_establecimiento")
     private Integer idEstablecimiento;

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.entysoftware.aplication.controller.controlerAdviceDto.ControllerAdviceDto;
 import com.entysoftware.aplication.customExceptions.BaseYaRegistrada;
 import com.entysoftware.aplication.customExceptions.EstablecimientoNoEncontradoException;
+import com.entysoftware.aplication.customExceptions.ObjetosNoEncontradosExepcion;
 import com.entysoftware.aplication.customExceptions.UsuarioNoEncontradoException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,6 +44,14 @@ public class ControllerAdvice {
         return ResponseEntity.status(404).body(excepcionDto);
     }
 
+     @ExceptionHandler(ObjetosNoEncontradosExepcion.class)
+    public ResponseEntity<ControllerAdviceDto> HandlerObjetosNoEncontradosExepcion( ObjetosNoEncontradosExepcion except , HttpServletRequest request){
+
+        String path = request.getRequestURI();
+
+        ControllerAdviceDto excepcionDto = new ControllerAdviceDto(LocalDateTime.now(),"404","No Found",except.getMessage(),path);
+        return ResponseEntity.status(404).body(excepcionDto);
+    }
 
 
 
