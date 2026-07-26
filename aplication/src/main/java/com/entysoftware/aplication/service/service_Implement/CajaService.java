@@ -1,10 +1,14 @@
 package com.entysoftware.aplication.service.service_Implement;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.entysoftware.aplication.model.BaseInicial;
-import com.entysoftware.aplication.model.dto.BaseInicialDto;
+import com.entysoftware.aplication.model.dto.baseDia.BaseInicialDto;
+import com.entysoftware.aplication.model.dto.baseDia.RespuestaBaseInicialDto;
 import com.entysoftware.aplication.repository.BaseInicialRepository;
 import com.entysoftware.aplication.service.CajaInterface;
 
@@ -20,9 +24,9 @@ public class CajaService implements CajaInterface {
         this.baseInicialRepository = baseInicialRepository;
     }
     
-    public ResponseEntity<String> aperturaDia(BaseInicialDto base){
+    public ResponseEntity<RespuestaBaseInicialDto> aperturaDia(BaseInicialDto base){
         LocalDate hoy = LocalDate.now();
-        
+        LocalTime hora = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
 
         /*if (baseInicialRepository.validarExistenciaBaseInicial(base.getFk_id_establecimiento(), hoy) != null) {
             
@@ -30,10 +34,11 @@ public class CajaService implements CajaInterface {
 
         }*/
 
-        BaseInicial baseInicial = new BaseInicial(null,base.getIdEstablecimiento(),base.getValor(),hoy);
-        baseInicialRepository.save(baseInicial);
+        BaseInicial baseInicial = new BaseInicial(null,base.getIdEstablecimiento(),base.getValor(),hoy,hora);
+        BaseInicial registroBase = baseInicialRepository.save(baseInicial);
+        RespuestaBaseInicialDto respuesta = new RespuestaBaseInicialDto(true,registroBase.getValorBaseInicial(),registroBase.getHora(),registroBase.getFecha());
         log.debug("Se ha registrado la base del dia correctamente");
-        return ResponseEntity.ok("La base inicial se ha guardado Correctamente");
+        return ResponseEntity.ok(respuesta);
     } 
 
 }

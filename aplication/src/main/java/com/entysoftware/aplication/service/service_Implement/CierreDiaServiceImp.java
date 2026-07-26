@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.entysoftware.aplication.model.dto.CierreDiaDto;
+import com.entysoftware.aplication.model.dto.cierreCaja.CierreDiaDto;
 import com.entysoftware.aplication.repository.BaseInicialRepository;
 import com.entysoftware.aplication.repository.CostosRepository;
 import com.entysoftware.aplication.repository.EncabezadoPedidosRepository;

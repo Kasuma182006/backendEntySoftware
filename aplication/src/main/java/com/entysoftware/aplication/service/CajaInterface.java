@@ -2,8 +2,9 @@ package com.entysoftware.aplication.service;
 
 import org.springframework.http.ResponseEntity;
 
-import com.entysoftware.aplication.model.dto.BaseInicialDto;
+import com.entysoftware.aplication.model.dto.baseDia.BaseInicialDto;
+import com.entysoftware.aplication.model.dto.baseDia.RespuestaBaseInicialDto;
 
 public interface CajaInterface {
-    public ResponseEntity<String> aperturaDia(BaseInicialDto base);
+    public ResponseEntity<RespuestaBaseInicialDto> aperturaDia(BaseInicialDto base);
 }

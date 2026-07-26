@@ -3,7 +3,7 @@ package com.entysoftware.aplication.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.entysoftware.aplication.model.dto.CierreDiaDto;
+import com.entysoftware.aplication.model.dto.cierreCaja.CierreDiaDto;
 import com.entysoftware.aplication.service.service_Implement.CierreDiaServiceImp;
 
 import org.springframework.http.ResponseEntity;

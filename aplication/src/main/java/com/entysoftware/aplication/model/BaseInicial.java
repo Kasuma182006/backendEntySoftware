@@ -2,6 +2,7 @@ package com.entysoftware.aplication.model;
 
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,7 +29,11 @@ public class BaseInicial {
     private Integer idEstablecimiento;
     
     @Column(name = "valor")
-    private int valorBaseInicial; 
+    private int valorBaseInicial;
     
     private LocalDate fecha;
+    
+    @Column(name= "hora_apertura")
+    private LocalTime hora;
+    
 }
