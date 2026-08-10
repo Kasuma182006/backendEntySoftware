@@ -15,6 +15,7 @@ import io.jsonwebtoken.security.Keys;
 public class JwtService {
 
     private static final long EXPIRATION_MS = 1000L * 60 * 60 * 24;
+    private static final String CLAIM_ROL = "rol";
 
     @Value("${jwt.secret}")
     private String secret;
@@ -29,7 +30,7 @@ public class JwtService {
 
         return Jwts.builder()
                 .subject(identificacion)
-                .claim("rol", rol)
+                .claim(CLAIM_ROL, rol)
                 .issuedAt(ahora)
                 .expiration(expiracion)
                 .signWith(obtenerKey())
@@ -49,6 +50,6 @@ public class JwtService {
     }
 
     public String extraerRol(String token) {
-        return extraerClaims(token).get("rol", String.class);
+        return extraerClaims(token).get(CLAIM_ROL, String.class);
     }
 }

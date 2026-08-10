@@ -28,12 +28,6 @@ public class CajaService implements CajaInterface {
         LocalDate hoy = LocalDate.now();
         LocalTime hora = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
 
-        /*if (baseInicialRepository.validarExistenciaBaseInicial(base.getFk_id_establecimiento(), hoy) != null) {
-            
-            throw new BaseYaRegistrada("Ya se encuentra una base registrada en el día de hoy");
-
-        }*/
-
         BaseInicial baseInicial = new BaseInicial(null,base.getIdEstablecimiento(),base.getValor(),hoy,hora);
         BaseInicial registroBase = baseInicialRepository.save(baseInicial);
         RespuestaBaseInicialDto respuesta = new RespuestaBaseInicialDto(true,registroBase.getValorBaseInicial(),registroBase.getHora(),registroBase.getFecha());

@@ -13,19 +13,20 @@ import com.entysoftware.aplication.model.Mesas;
 import com.entysoftware.aplication.model.dto.MesasDto;
 import com.entysoftware.aplication.repository.EstablecimientoRepository;
 import com.entysoftware.aplication.repository.MesasRepository;
+import com.entysoftware.aplication.service.MesasInterface;
 
 
 import jakarta.transaction.Transactional;
 
 @Service
-public class MesasServiceImp {
+public class MesasServiceImp implements MesasInterface {
 
 
-    private MesasRepository mesasRepository;
+    private final MesasRepository mesasRepository;
 
-    private MapperMesasDto mapperMesasDto;
+    private final MapperMesasDto mapperMesasDto;
 
-    private EstablecimientoRepository establecimientoRepository;
+    private final EstablecimientoRepository establecimientoRepository;
 
     public MesasServiceImp(MesasRepository mesasRepository, MapperMesasDto mapperMesasDto, EstablecimientoRepository establecimientoRepository){
         this.mapperMesasDto = mapperMesasDto;

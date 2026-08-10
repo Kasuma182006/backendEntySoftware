@@ -23,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String PREFIJO_BEARER = "Bearer ";
+    private static final String PREFIJO_ROL_SPRING_SECURITY = "ROLE_";
+    private static final String ENCABEZADO_AUTORIZACION = "Authorization";
 
     private final JwtService jwtService;
 
@@ -34,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        String encabezadoAuth = request.getHeader("Authorization");
+        String encabezadoAuth = request.getHeader(ENCABEZADO_AUTORIZACION);
 
         if (encabezadoAuth == null || !encabezadoAuth.startsWith(PREFIJO_BEARER)) {
             filterChain.doFilter(request, response);
@@ -48,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String rol = jwtService.extraerRol(token);
 
             if (identificacion != null && rol != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + rol.toUpperCase()));
+                List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(PREFIJO_ROL_SPRING_SECURITY + rol.toUpperCase()));
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(identificacion, null, authorities);
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

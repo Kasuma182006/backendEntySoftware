@@ -30,66 +30,65 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class PedidoServiceImp implements PedidosInterface {
-    
-    
 
-    
+    private static final String TIPO_PAGO_EFECTIVO = "EFECTIVO";
+    private static final String ESTADO_PEDIDO_EN_ESPERA = "EN ESPERA";
+    private static final String ESTADO_PEDIDO_PAGADO = "PAGO";
+    private static final String FORMATO_FECHA_HORA_FACTURA = "yyyy-MM-dd HH:mm";
 
     private final EncabezadoPedidosRepository encabezadoPedidosRepository;
-    
+
     private final InventarioRepository inventarioRepository;
-   
+
     private final MesasRepository mesasRepository;
 
     private final MapperPedidosDto mapperPedidosDto;
+
     public PedidoServiceImp (EncabezadoPedidosRepository encabezadoPedidosRepository,InventarioRepository inventarioRepository,MesasRepository mesasRepository,MapperPedidosDto mapperPedidosDto){
         this.encabezadoPedidosRepository = encabezadoPedidosRepository;
         this.inventarioRepository = inventarioRepository;
         this.mesasRepository = mesasRepository;
         this.mapperPedidosDto = mapperPedidosDto;
-        
-
     }
-    
-    
-    @SuppressWarnings("null")
+
+
     @Transactional
     public ResponseEntity<Integer> crearPedido(PedidosDto pedido){
-                
+
         Mesas mesaProxy = mesasRepository.getReferenceById(pedido.getIdMesa());
-    
+
         EncabezadoPedidos encabezadoPedido = new EncabezadoPedidos(
-            null, 
-            mesaProxy, 
-            "EFECTIVO", 
-            "EN ESPERA", 
-            pedido.getValorDomicilio(), 
-            pedido.getPrecioTotal(), 
-            LocalDate.now(), 
+            null,
+            mesaProxy,
+            TIPO_PAGO_EFECTIVO,
+            ESTADO_PEDIDO_EN_ESPERA,
+            pedido.getValorDomicilio(),
+            pedido.getPrecioTotal(),
+            LocalDate.now(),
             pedido.getDescripcion(),
             new ArrayList<>()
-        ); 
-        
+        );
 
-        List<CuerpoPedidos> listaCuerpoPedido = pedido.getPedido().stream()
-                                                        .map(cuerpoPedido -> new CuerpoPedidos(
-                                                            null, 
-                                                            encabezadoPedido, 
-                                                            inventarioRepository.getReferenceById(cuerpoPedido.getIdProducto()), 
-                                                            cuerpoPedido.getCantidad()   
-                                                        ))
-                                                        .toList();
-
+        List<CuerpoPedidos> listaCuerpoPedido = crearDetallesPedido(pedido.getPedido(), encabezadoPedido);
 
         encabezadoPedido.setDetalles(listaCuerpoPedido);
         log.debug("lista de productos pedidos: {}", listaCuerpoPedido);
         EncabezadoPedidos encabezadoGuardado = encabezadoPedidosRepository.save(encabezadoPedido);
 
-        
-
         log.debug("se han creado los cuerpos del pedido en la base de datos");
 
         return ResponseEntity.ok(encabezadoGuardado.getIdPedido());
+    }
+
+    private List<CuerpoPedidos> crearDetallesPedido(List<DetallesPedidoDto> detalles, EncabezadoPedidos encabezadoPedido){
+        return detalles.stream()
+                        .map(cuerpoPedido -> new CuerpoPedidos(
+                            null,
+                            encabezadoPedido,
+                            inventarioRepository.getReferenceById(cuerpoPedido.getIdProducto()),
+                            cuerpoPedido.getCantidad()
+                        ))
+                        .toList();
     }
 
     public ResponseEntity<List<PedidosDto>> pedidosHoy (Integer idEstablecimiento){
@@ -97,43 +96,38 @@ public class PedidoServiceImp implements PedidosInterface {
         List<EncabezadoPedidos> pedido = encabezadoPedidosRepository.buscarPedidosDeHoyConDetalles(idEstablecimiento, LocalDate.now());
 
         List<PedidosDto> listaPedidosDto = pedido.stream()
-                                                  .map (p -> {
-                                                        
-                                                        PedidosDto dto = mapperPedidosDto.pedidosToEntity(p);
-                                                        
-                                                        List<DetallesPedidoDto> detallesDto = p.getDetalles().stream()
-                                                                                                .map(cuerpo -> new DetallesPedidoDto(
-                                                                                                    cuerpo.getIdCuerpo(),
-                                                                                                    cuerpo.getIdInventario().getIdInventario(),
-                                                                                                    cuerpo.getIdInventario().getNombre(),
-                                                                                                    cuerpo.getCantidad()
-                                                                                                ))
-                                                                                                .toList();
-                                                        
-                                                        
-                                                        dto.setPedido(detallesDto);
-                                                        
-                                                        return dto;
-                                                    })
-                                                    .toList();
-            
+                                                  .map(this::convertirAPedidoDto)
+                                                  .toList();
 
-
-        
         return ResponseEntity.ok(listaPedidosDto);
 
+    }
+
+    private PedidosDto convertirAPedidoDto(EncabezadoPedidos encabezadoPedido){
+        PedidosDto dto = mapperPedidosDto.pedidosToEntity(encabezadoPedido);
+
+        List<DetallesPedidoDto> detallesDto = encabezadoPedido.getDetalles().stream()
+                                                                .map(cuerpo -> new DetallesPedidoDto(
+                                                                    cuerpo.getIdCuerpo(),
+                                                                    cuerpo.getIdInventario().getIdInventario(),
+                                                                    cuerpo.getIdInventario().getNombre(),
+                                                                    cuerpo.getCantidad()
+                                                                ))
+                                                                .toList();
+
+        dto.setPedido(detallesDto);
+
+        return dto;
     }
 
 
     @SuppressWarnings("null")
     @Transactional
     public ResponseEntity<String> editarPedido(PedidosDto editarPedido) {
-        
-        
+
         EncabezadoPedidos pedidoExistente = encabezadoPedidosRepository.findById(editarPedido.getIdPedido())
             .orElseThrow(() -> new EntityNotFoundException("El pedido con ID " + editarPedido.getIdPedido() + " no existe"));
 
-        
         if (editarPedido.getIdMesa() != null) {
             pedidoExistente.setIdMesa(mesasRepository.getReferenceById(editarPedido.getIdMesa()));
         }
@@ -152,7 +146,7 @@ public class PedidoServiceImp implements PedidosInterface {
         if (editarPedido.getDescripcion() != null) {
             pedidoExistente.setDescripcion(editarPedido.getDescripcion());
         }
-        
+
         if (editarPedido.getPedido() != null && !editarPedido.getPedido().isEmpty()) {
             List<CuerpoPedidos> listaCuerpoPedido = editarPedido.getPedido().stream()
                 .map(cuerpoPedido -> new CuerpoPedidos(
@@ -161,33 +155,31 @@ public class PedidoServiceImp implements PedidosInterface {
                     inventarioRepository.getReferenceById(cuerpoPedido.getIdProducto()),
                     cuerpoPedido.getCantidad()
                 ))
-                .toList(); 
+                .toList();
 
-        
             pedidoExistente.getDetalles().clear();
             pedidoExistente.getDetalles().addAll(listaCuerpoPedido);
         }
 
-        
         encabezadoPedidosRepository.save(pedidoExistente);
-        
+
         return ResponseEntity.ok("Pedido actualizado");
-        
 
     }
-    
-    @SuppressWarnings("null")
+
     public ResponseEntity<FacturaPedidoDto> pagoPedido(PagarPedidoDto pago){
-        Optional <EncabezadoPedidos> pedido =  encabezadoPedidosRepository.findById(pago.getIdPedido());
-         
-        int calcularCambio =  pago.getPagoPedido() - pedido.get().getPrecioTotal();
-        pedido.get().setEstadoPedido("PAGO");
-        pedido.get().setTipoPago(pago.getTipoPago());
-        encabezadoPedidosRepository.save(pedido.get());
-        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        Optional<EncabezadoPedidos> pedidoOptional = encabezadoPedidosRepository.findById(pago.getIdPedido());
+        EncabezadoPedidos pedido = pedidoOptional.orElseThrow();
+
+        int calcularCambio = pago.getPagoPedido() - pedido.getPrecioTotal();
+        pedido.setEstadoPedido(ESTADO_PEDIDO_PAGADO);
+        pedido.setTipoPago(pago.getTipoPago());
+        encabezadoPedidosRepository.save(pedido);
+
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern(FORMATO_FECHA_HORA_FACTURA);
         String fechaYHora = LocalDateTime.now().format(formato);
 
-        return ResponseEntity.ok(new FacturaPedidoDto(pago.getIdPedido(),pedido.get().getIdMesa().getIdMesa(),pedido.get().getEstadoPedido(),pedido.get().getPrecioTotal(),calcularCambio,pedido.get().getTipoPago(),fechaYHora));
+        return ResponseEntity.ok(new FacturaPedidoDto(pago.getIdPedido(),pedido.getIdMesa().getIdMesa(),pedido.getEstadoPedido(),pedido.getPrecioTotal(),calcularCambio,pedido.getTipoPago(),fechaYHora));
     }
 
 }
