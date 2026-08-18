@@ -15,7 +15,7 @@ public class MapperMesasDto {
         Mesas mesa = new Mesas();
         mesa.setIdEstablecimiento(establecimiento.getIdEstablecimiento());
         mesa.setNombreMesa(mesaDto.getNombreMesa());
-        mesa.setEstadoMesa(mesaDto.getEstadoMesa());
+        mesa.setEstadoMesa(mesaDto.getOcupada());
         return mesa;
     }
 }

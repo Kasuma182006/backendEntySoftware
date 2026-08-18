@@ -64,8 +64,8 @@ public class MesasServiceImp implements MesasInterface {
         if (mesaDto.getNombreMesa() != null) {
             mesaExistente.setNombreMesa(mesaDto.getNombreMesa());
         }
-        if (mesaDto.getEstadoMesa() != null) {
-            mesaExistente.setEstadoMesa(mesaDto.getEstadoMesa());
+        if (mesaDto.getOcupada() != null) {
+            mesaExistente.setEstadoMesa(mesaDto.getOcupada());
         }
 
         mesasRepository.save(mesaExistente);

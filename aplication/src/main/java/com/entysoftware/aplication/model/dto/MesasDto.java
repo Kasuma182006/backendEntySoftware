@@ -18,8 +18,8 @@ public class MesasDto {
     @Schema(description = "Nombre o número identificador de la mesa.", example = "Mesa 5", requiredMode = Schema.RequiredMode.REQUIRED)
     private String nombreMesa;
 
-    @Schema(description = "Indica si la mesa está ocupada (true) o libre (false).", example = "false", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Boolean estadoMesa;
+    @Schema(description = "Indica si la mesa está ocupada (true) o libre (false).", example = "false", requiredMode = Schema.RequiredMode.REQUIRED)   
+    private Boolean ocupada;
 
 
 }

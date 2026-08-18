@@ -1,4 +1,4 @@
-package com.entysoftware.aplication;
+package com.entysoftware.aplication.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +10,7 @@ import org.springframework.lang.NonNull; // En Spring Boot 3 suele mapear desde 
 public class CorsConfig {
 
     private static final String TODOS_LOS_ORIGENES = "*";
-    private static final String[] METODOS_HTTP_PERMITIDOS = {"GET", "POST", "PUT", "DELETE", "OPTIONS"};
+    private static final String[] METODOS_HTTP_PERMITIDOS = {"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"};
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
