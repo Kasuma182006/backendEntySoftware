@@ -47,4 +47,7 @@ public class Adiciones {
 
     @Schema(description = "Nombre de la adición.", example = "Queso extra")
     private String nombre;
+
+    @Column(name = "precio")
+    private Integer precioAdicion;
 }

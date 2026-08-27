@@ -141,7 +141,7 @@ class PedidoServiceImpTest {
             DetallesPedidoDto detalleDto = new DetallesPedidoDto(null, 100, null, 1, List.of(adicionDto));
             PedidosDto pedidoDto = new PedidosDto(null, 1, null, null, 0, 12000, null, "", List.of(detalleDto));
 
-            Adiciones adicionProxy = new Adiciones(9, 1, "Queso extra");
+            Adiciones adicionProxy = new Adiciones(9, 1, "Queso extra",100);
             when(mesasRepository.getReferenceById(1)).thenReturn(crearMesa(1));
             when(inventarioRepository.getReferenceById(100)).thenReturn(new Inventario(100, "Hamburguesa", 1, "d", 12000));
             when(adicionesRepository.getReferenceById(9)).thenReturn(adicionProxy);
@@ -280,7 +280,7 @@ class PedidoServiceImpTest {
             pedidoExistente.getDetalles().add(new CuerpoPedidos(99, pedidoExistente, new Inventario(1, "Viejo", 1, "d", 1000), 1));
             when(encabezadoPedidosRepository.findById(1)).thenReturn(Optional.of(pedidoExistente));
 
-            Adiciones adicionProxy = new Adiciones(9, 1, "Tocineta");
+            Adiciones adicionProxy = new Adiciones(9, 1, "Tocineta",100);
             when(inventarioRepository.getReferenceById(50)).thenReturn(new Inventario(50, "Gaseosa", 1, "d", 3000));
             when(adicionesRepository.getReferenceById(9)).thenReturn(adicionProxy);
 
