@@ -1,7 +1,7 @@
 package com.entysoftware.aplication.service.service_Implement;
 
 import java.util.List;
-
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -80,8 +80,10 @@ public class MesasServiceImp implements MesasInterface {
             throw new ObjetosNoEncontradosExepcion("La mesa con ID " + idMesa + " no existe");
         }
 
-        mesasRepository.deleteById(idMesa);
-
+       Optional<Mesas> mesaEliminada = mesasRepository.findById(idMesa);
+        mesaEliminada.get().setEliminada(true);
+        mesasRepository.save(mesaEliminada.get());
+        
         return ResponseEntity.ok("Mesa eliminada");
     }
 

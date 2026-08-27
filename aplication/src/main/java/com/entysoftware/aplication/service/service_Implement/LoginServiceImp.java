@@ -11,6 +11,7 @@ import com.entysoftware.aplication.model.Establecimiento;
 import com.entysoftware.aplication.model.Inventario;
 import com.entysoftware.aplication.model.Mesas;
 import com.entysoftware.aplication.model.Propietarios;
+import com.entysoftware.aplication.model.dto.MesasDto;
 import com.entysoftware.aplication.model.dto.loginDto.EstablecimientosDto;
 import com.entysoftware.aplication.model.dto.loginDto.LoginDto;
 import com.entysoftware.aplication.model.dto.loginDto.LoginSuccesfulDto;
@@ -93,6 +94,15 @@ public class LoginServiceImp implements LoginInterface {
         Establecimiento establecimientoSeleccionado = establecimientoRepository.findById(idEstablecimiento).orElseThrow(()-> new EstablecimientoNoEncontradoException("No se ha encontrado el ID del establecimiento"));
         Propietarios propietario = propietariosRepository.loginPropietario(usuario.getIdentificacion(),usuario.getPassword());
         List<Mesas> listaMesas = mesasRepository.findByFK_id_establecimiento(establecimientoSeleccionado.getIdEstablecimiento());
+        List<MesasDto> listaMesasDto = listaMesas.stream()
+                  .map(m -> new MesasDto(
+                                         m.getIdMesa(),
+                                         m.getIdEstablecimiento(),
+                                         m.getNombreMesa(),
+                                         m.getEstadoMesa()
+                                        ))
+                   .toList();
+
         List<Categorias> listaCategorias = categoriasRepository.findByFk_id_establecimiento(establecimientoSeleccionado.getIdEstablecimiento());
         List<Inventario> listaInventario = listaCategorias.stream()
                                                            .flatMap(categoria -> inventarioRepository.findByFK_categoria(categoria.getId()).stream())
@@ -103,18 +113,18 @@ public class LoginServiceImp implements LoginInterface {
             if(empleado == null)throw new UsuarioNoEncontradoException("No se han encontrado resultados");
 
             String token = jwtService.generarToken(empleado.getNumeroIdentificacion(),empleado.getRol());
-            LoginSuccesfulDto dtoLogin = construirRespuestaLogin(empleado.getNumeroIdentificacion(),empleado.getNombre(),empleado.getRol(),establecimientoSeleccionado,listaMesas,listaCategorias,listaInventario,token);
+            LoginSuccesfulDto dtoLogin = construirRespuestaLogin(empleado.getNumeroIdentificacion(),empleado.getNombre(),empleado.getRol(),establecimientoSeleccionado,listaMesasDto,listaCategorias,listaInventario,token);
             log.debug("Login exitoso: {}",dtoLogin.getNombre());
             return ResponseEntity.ok(dtoLogin);
         }
 
         String token = jwtService.generarToken(propietario.getIdPropietario(),ROL_ADMINISTRADOR);
-        LoginSuccesfulDto dtoLogin = construirRespuestaLogin(propietario.getIdPropietario(),propietario.getNombre(),ROL_ADMINISTRADOR,establecimientoSeleccionado,listaMesas,listaCategorias,listaInventario,token);
+        LoginSuccesfulDto dtoLogin = construirRespuestaLogin(propietario.getIdPropietario(),propietario.getNombre(),ROL_ADMINISTRADOR,establecimientoSeleccionado,listaMesasDto,listaCategorias,listaInventario,token);
         log.debug("Login exitoso: {}",dtoLogin.getNombre());
         return ResponseEntity.ok(dtoLogin);
     }
 
-    private LoginSuccesfulDto construirRespuestaLogin(String numeroIdentificacion, String nombre, String rol, Establecimiento establecimiento, List<Mesas> listaMesas, List<Categorias> listaCategorias, List<Inventario> listaInventario, String token){
+    private LoginSuccesfulDto construirRespuestaLogin(String numeroIdentificacion, String nombre, String rol, Establecimiento establecimiento, List<MesasDto> listaMesas, List<Categorias> listaCategorias, List<Inventario> listaInventario, String token){
         return new LoginSuccesfulDto(numeroIdentificacion,nombre,rol,establecimiento.getIdEstablecimiento(),establecimiento.getEstadoEstablecimiento(),establecimiento.getNombreEstablecimiento(),listaMesas,listaCategorias,listaInventario,token);
     }
 

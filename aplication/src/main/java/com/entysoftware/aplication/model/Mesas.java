@@ -21,19 +21,19 @@ public class Mesas {
     private Integer idMesa;
 
     @Column(name = "FK_id_establecimiento")
-    @Schema(description = "Identificador del establecimiento al que pertenece la mesa.", example = "1")
     private Integer idEstablecimiento;
 
     @Column(name = "nombre")
-    @Schema(description = "Nombre o número identificador de la mesa.", example = "Mesa 5")
     private String nombreMesa;
 
     @Column (name = "ocupada")
-    @Schema(description = "Indica si la mesa está ocupada (true) o libre (false).", example = "false")
     private Boolean estadoMesa;
 
     @JsonBackReference
     @OneToMany(mappedBy = "idMesa", fetch = FetchType.LAZY)
     @Schema(hidden = true)
     private List<EncabezadoPedidos> encabezadoPedido;
+
+   
+    private Boolean eliminada; 
 }

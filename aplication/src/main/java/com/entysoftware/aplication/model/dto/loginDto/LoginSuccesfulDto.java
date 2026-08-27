@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.entysoftware.aplication.model.Categorias;
 import com.entysoftware.aplication.model.Inventario;
-import com.entysoftware.aplication.model.Mesas;
+import com.entysoftware.aplication.model.dto.MesasDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -35,7 +35,7 @@ public class LoginSuccesfulDto {
     private String nombre_establecimiento;
 
     @Schema(description = "Listado de mesas registradas en el establecimiento.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private List<Mesas> mesas;
+    private List<MesasDto> mesas;
 
     @Schema(description = "Listado de categorías de productos registradas en el establecimiento.", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<Categorias> categorias;

@@ -27,14 +27,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.entysoftware.aplication.mapper.MapperPedidosDto;
+import com.entysoftware.aplication.model.Adiciones;
 import com.entysoftware.aplication.model.CuerpoPedidos;
+import com.entysoftware.aplication.model.CuerpoPedidosAdiciones;
 import com.entysoftware.aplication.model.EncabezadoPedidos;
 import com.entysoftware.aplication.model.Inventario;
 import com.entysoftware.aplication.model.Mesas;
 import com.entysoftware.aplication.model.dto.pagosDTOs.FacturaPedidoDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
+import com.entysoftware.aplication.model.dto.pedidosDTOs.AdicionPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.DetallesPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.PedidosDto;
+import com.entysoftware.aplication.repository.AdicionesRepository;
 import com.entysoftware.aplication.repository.EncabezadoPedidosRepository;
 import com.entysoftware.aplication.repository.InventarioRepository;
 import com.entysoftware.aplication.repository.MesasRepository;
@@ -52,6 +56,9 @@ class PedidoServiceImpTest {
 
     @Mock
     private MesasRepository mesasRepository;
+
+    @Mock
+    private AdicionesRepository adicionesRepository;
 
     @Mock
     private MapperPedidosDto mapperPedidosDto;
@@ -125,6 +132,34 @@ class PedidoServiceImpTest {
             assertEquals(2, captor.getValue().getDetalles().size());
             verify(inventarioRepository, times(1)).getReferenceById(1);
             verify(inventarioRepository, times(1)).getReferenceById(2);
+        }
+
+        @Test
+        void givenDetalleConAdiciones_whenCrearPedido_thenConstruyeFilasIntermediasConBackReference() {
+            // Arrange
+            AdicionPedidoDto adicionDto = new AdicionPedidoDto(9, null, 2);
+            DetallesPedidoDto detalleDto = new DetallesPedidoDto(null, 100, null, 1, List.of(adicionDto));
+            PedidosDto pedidoDto = new PedidosDto(null, 1, null, null, 0, 12000, null, "", List.of(detalleDto));
+
+            Adiciones adicionProxy = new Adiciones(9, 1, "Queso extra");
+            when(mesasRepository.getReferenceById(1)).thenReturn(crearMesa(1));
+            when(inventarioRepository.getReferenceById(100)).thenReturn(new Inventario(100, "Hamburguesa", 1, "d", 12000));
+            when(adicionesRepository.getReferenceById(9)).thenReturn(adicionProxy);
+            when(encabezadoPedidosRepository.save(any(EncabezadoPedidos.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            // Act
+            pedidoServiceImp.crearPedido(pedidoDto);
+
+            // Assert
+            ArgumentCaptor<EncabezadoPedidos> captor = ArgumentCaptor.forClass(EncabezadoPedidos.class);
+            verify(encabezadoPedidosRepository).save(captor.capture());
+            CuerpoPedidos cuerpo = captor.getValue().getDetalles().get(0);
+            assertEquals(1, cuerpo.getAdiciones().size());
+            CuerpoPedidosAdiciones fila = cuerpo.getAdiciones().get(0);
+            assertEquals(adicionProxy, fila.getAdicion());
+            assertEquals(2, fila.getCantidadAdicion());
+            assertEquals(cuerpo, fila.getCuerpoPedido()); // back-reference sincronizado
+            verify(adicionesRepository, times(1)).getReferenceById(9);
         }
     }
 
@@ -232,6 +267,34 @@ class PedidoServiceImpTest {
             assertTrue(pedidoExistente.getDetalles().isEmpty());
             verify(mesasRepository, never()).getReferenceById(any());
             verify(encabezadoPedidosRepository, times(1)).save(pedidoExistente);
+        }
+
+        @Test
+        void givenPedidoConAdiciones_whenEditarPedido_thenReemplazaLineasYAdiciones() {
+            // Arrange
+            AdicionPedidoDto adicionDto = new AdicionPedidoDto(9, null, 3);
+            DetallesPedidoDto nuevoDetalle = new DetallesPedidoDto(null, 50, null, 1, List.of(adicionDto));
+            PedidosDto editar = new PedidosDto(1, null, null, null, null, null, null, null, List.of(nuevoDetalle));
+
+            EncabezadoPedidos pedidoExistente = new EncabezadoPedidos(1, crearMesa(1), "EFECTIVO", "EN ESPERA", 0, 5000, LocalDate.now(), "desc", new ArrayList<>());
+            pedidoExistente.getDetalles().add(new CuerpoPedidos(99, pedidoExistente, new Inventario(1, "Viejo", 1, "d", 1000), 1));
+            when(encabezadoPedidosRepository.findById(1)).thenReturn(Optional.of(pedidoExistente));
+
+            Adiciones adicionProxy = new Adiciones(9, 1, "Tocineta");
+            when(inventarioRepository.getReferenceById(50)).thenReturn(new Inventario(50, "Gaseosa", 1, "d", 3000));
+            when(adicionesRepository.getReferenceById(9)).thenReturn(adicionProxy);
+
+            // Act
+            ResponseEntity<String> response = pedidoServiceImp.editarPedido(editar);
+
+            // Assert
+            assertEquals("Pedido actualizado", response.getBody());
+            assertEquals(1, pedidoExistente.getDetalles().size());
+            CuerpoPedidos cuerpo = pedidoExistente.getDetalles().get(0);
+            assertEquals(1, cuerpo.getAdiciones().size());
+            assertEquals(adicionProxy, cuerpo.getAdiciones().get(0).getAdicion());
+            assertEquals(3, cuerpo.getAdiciones().get(0).getCantidadAdicion());
+            assertEquals(cuerpo, cuerpo.getAdiciones().get(0).getCuerpoPedido());
         }
 
         @Test

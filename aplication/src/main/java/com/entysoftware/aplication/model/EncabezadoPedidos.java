@@ -54,7 +54,9 @@ public class EncabezadoPedidos {
     
     private String descripcion;
 
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // orphanRemoval = true: al reemplazar los detalles en editarPedido, las líneas
+    // (y sus adiciones, por cascada) que se quitan de la colección se eliminan de la BD.
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<CuerpoPedidos> detalles;
 

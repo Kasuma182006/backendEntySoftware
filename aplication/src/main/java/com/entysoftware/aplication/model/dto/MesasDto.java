@@ -20,6 +20,6 @@ public class MesasDto {
 
     @Schema(description = "Indica si la mesa está ocupada (true) o libre (false).", example = "false", requiredMode = Schema.RequiredMode.REQUIRED)   
     private Boolean ocupada;
-
+    
 
 }
