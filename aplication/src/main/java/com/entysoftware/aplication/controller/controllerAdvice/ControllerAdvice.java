@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.entysoftware.aplication.controller.controllerAdviceDto.ControllerAdviceDto;
-import com.entysoftware.aplication.customExceptions.BaseYaRegistrada;
-import com.entysoftware.aplication.customExceptions.EstablecimientoNoEncontradoException;
-import com.entysoftware.aplication.customExceptions.ObjetosNoEncontradosExepcion;
-import com.entysoftware.aplication.customExceptions.UsuarioNoEncontradoException;
+import com.entysoftware.aplication.error.BaseYaRegistrada;
+import com.entysoftware.aplication.error.EstablecimientoNoEncontradoException;
+import com.entysoftware.aplication.error.ObjetosNoEncontradosExepcion;
+import com.entysoftware.aplication.error.UsuarioNoEncontradoException;
 
 import jakarta.servlet.http.HttpServletRequest;
 

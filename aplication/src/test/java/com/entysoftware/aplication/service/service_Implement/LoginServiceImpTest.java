@@ -24,17 +24,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.entysoftware.aplication.customExceptions.EstablecimientoNoEncontradoException;
-import com.entysoftware.aplication.customExceptions.UsuarioNoEncontradoException;
-import com.entysoftware.aplication.model.Categorias;
-import com.entysoftware.aplication.model.Empleados;
-import com.entysoftware.aplication.model.Establecimiento;
-import com.entysoftware.aplication.model.Inventario;
-import com.entysoftware.aplication.model.Mesas;
-import com.entysoftware.aplication.model.Propietarios;
+import com.entysoftware.aplication.error.EstablecimientoNoEncontradoException;
+import com.entysoftware.aplication.error.UsuarioNoEncontradoException;
 import com.entysoftware.aplication.model.dto.loginDto.EstablecimientosDto;
 import com.entysoftware.aplication.model.dto.loginDto.LoginDto;
 import com.entysoftware.aplication.model.dto.loginDto.LoginSuccesfulDto;
+import com.entysoftware.aplication.model.models.Categorias;
+import com.entysoftware.aplication.model.models.Empleados;
+import com.entysoftware.aplication.model.models.Establecimiento;
+import com.entysoftware.aplication.model.models.Inventario;
+import com.entysoftware.aplication.model.models.Mesas;
+import com.entysoftware.aplication.model.models.Propietarios;
 import com.entysoftware.aplication.repository.CategoriasRepository;
 import com.entysoftware.aplication.repository.EmpleadosRepository;
 import com.entysoftware.aplication.repository.EstablecimientoRepository;
@@ -42,6 +42,7 @@ import com.entysoftware.aplication.repository.InventarioRepository;
 import com.entysoftware.aplication.repository.MesasRepository;
 import com.entysoftware.aplication.repository.PropietariosRepository;
 import com.entysoftware.aplication.security.JwtService;
+import com.entysoftware.aplication.service.services.LoginServiceImp;
 
 @ExtendWith(MockitoExtension.class)
 class LoginServiceImpTest {

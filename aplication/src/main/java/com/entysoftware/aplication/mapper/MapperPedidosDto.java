@@ -2,8 +2,8 @@ package com.entysoftware.aplication.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.entysoftware.aplication.model.EncabezadoPedidos;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.PedidosDto;
+import com.entysoftware.aplication.model.models.EncabezadoPedidos;
 
 @Component
 public class MapperPedidosDto {

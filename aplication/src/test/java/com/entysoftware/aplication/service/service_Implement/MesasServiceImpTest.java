@@ -24,13 +24,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.entysoftware.aplication.customExceptions.ObjetosNoEncontradosExepcion;
+import com.entysoftware.aplication.error.ObjetosNoEncontradosExepcion;
 import com.entysoftware.aplication.mapper.MapperMesasDto;
-import com.entysoftware.aplication.model.Establecimiento;
-import com.entysoftware.aplication.model.Mesas;
 import com.entysoftware.aplication.model.dto.MesasDto;
+import com.entysoftware.aplication.model.models.Establecimiento;
+import com.entysoftware.aplication.model.models.Mesas;
 import com.entysoftware.aplication.repository.EstablecimientoRepository;
 import com.entysoftware.aplication.repository.MesasRepository;
+import com.entysoftware.aplication.service.services.MesasServiceImp;
 
 @ExtendWith(MockitoExtension.class)
 class MesasServiceImpTest {

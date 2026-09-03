@@ -2,7 +2,9 @@ package com.entysoftware.aplication.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import com.entysoftware.aplication.model.Mesas;
+
+import com.entysoftware.aplication.model.models.Mesas;
+
 import java.util.List;
 
 

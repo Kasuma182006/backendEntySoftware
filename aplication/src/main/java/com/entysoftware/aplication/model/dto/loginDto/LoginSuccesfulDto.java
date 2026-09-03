@@ -2,10 +2,9 @@ package com.entysoftware.aplication.model.dto.loginDto;
 
 import java.util.List;
 
-
-import com.entysoftware.aplication.model.Categorias;
-import com.entysoftware.aplication.model.Inventario;
 import com.entysoftware.aplication.model.dto.MesasDto;
+import com.entysoftware.aplication.model.models.Categorias;
+import com.entysoftware.aplication.model.models.Inventario;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

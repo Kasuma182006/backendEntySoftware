@@ -27,21 +27,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.entysoftware.aplication.mapper.MapperPedidosDto;
-import com.entysoftware.aplication.model.Adiciones;
-import com.entysoftware.aplication.model.CuerpoPedidos;
-import com.entysoftware.aplication.model.CuerpoPedidosAdiciones;
-import com.entysoftware.aplication.model.EncabezadoPedidos;
-import com.entysoftware.aplication.model.Inventario;
-import com.entysoftware.aplication.model.Mesas;
 import com.entysoftware.aplication.model.dto.pagosDTOs.FacturaPedidoDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.AdicionPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.DetallesPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.PedidosDto;
+import com.entysoftware.aplication.model.models.Adiciones;
+import com.entysoftware.aplication.model.models.CuerpoPedidos;
+import com.entysoftware.aplication.model.models.CuerpoPedidosAdiciones;
+import com.entysoftware.aplication.model.models.EncabezadoPedidos;
+import com.entysoftware.aplication.model.models.Inventario;
+import com.entysoftware.aplication.model.models.Mesas;
 import com.entysoftware.aplication.repository.AdicionesRepository;
 import com.entysoftware.aplication.repository.EncabezadoPedidosRepository;
 import com.entysoftware.aplication.repository.InventarioRepository;
 import com.entysoftware.aplication.repository.MesasRepository;
+import com.entysoftware.aplication.service.services.PedidoServiceImp;
 
 import jakarta.persistence.EntityNotFoundException;
 

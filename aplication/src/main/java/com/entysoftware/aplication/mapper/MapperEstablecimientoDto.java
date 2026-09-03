@@ -2,8 +2,8 @@ package com.entysoftware.aplication.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.entysoftware.aplication.model.Establecimiento;
 import com.entysoftware.aplication.model.dto.EstablecimientoEstadoCajaDto;
+import com.entysoftware.aplication.model.models.Establecimiento;
 
 @Component
 public class MapperEstablecimientoDto {

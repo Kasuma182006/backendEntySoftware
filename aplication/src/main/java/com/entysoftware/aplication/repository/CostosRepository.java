@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.entysoftware.aplication.model.Costos;
+import com.entysoftware.aplication.model.models.Costos;
 
 public interface CostosRepository extends JpaRepository<Costos, Integer> {
 

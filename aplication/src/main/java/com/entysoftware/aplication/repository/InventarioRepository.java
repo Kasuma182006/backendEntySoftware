@@ -4,8 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.entysoftware.aplication.model.models.Inventario;
 
-import com.entysoftware.aplication.model.Inventario;
 import java.util.List;
 
 

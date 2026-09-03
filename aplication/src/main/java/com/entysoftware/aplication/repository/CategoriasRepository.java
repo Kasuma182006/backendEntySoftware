@@ -3,7 +3,9 @@ package com.entysoftware.aplication.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import com.entysoftware.aplication.model.Categorias;
+
+import com.entysoftware.aplication.model.models.Categorias;
+
 import java.util.List;
 
 

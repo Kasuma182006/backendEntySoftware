@@ -22,10 +22,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.entysoftware.aplication.model.BaseInicial;
 import com.entysoftware.aplication.model.dto.baseDia.BaseInicialDto;
 import com.entysoftware.aplication.model.dto.baseDia.RespuestaBaseInicialDto;
+import com.entysoftware.aplication.model.models.BaseInicial;
 import com.entysoftware.aplication.repository.BaseInicialRepository;
+import com.entysoftware.aplication.service.services.CajaService;
 
 @ExtendWith(MockitoExtension.class)
 class CajaServiceTest {

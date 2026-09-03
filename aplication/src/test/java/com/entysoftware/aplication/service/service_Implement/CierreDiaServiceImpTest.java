@@ -25,6 +25,7 @@ import com.entysoftware.aplication.model.dto.cierreCaja.CierreDiaDto;
 import com.entysoftware.aplication.repository.BaseInicialRepository;
 import com.entysoftware.aplication.repository.CostosRepository;
 import com.entysoftware.aplication.repository.EncabezadoPedidosRepository;
+import com.entysoftware.aplication.service.services.CierreDiaServiceImp;
 
 @ExtendWith(MockitoExtension.class)
 class CierreDiaServiceImpTest {

@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/pedidos/**").hasAnyRole(ROL_ADMINISTRADOR, ROL_ASISTENTE)
                         .requestMatchers(HttpMethod.GET, "/mesas/listar-mesas/**").hasAnyRole(ROL_ADMINISTRADOR, ROL_ASISTENTE)
                         .requestMatchers(HttpMethod.GET, "/caja/establecimiento-estado-caja/**").hasAnyRole(ROL_ADMINISTRADOR, ROL_ASISTENTE)
+                        .requestMatchers(HttpMethod.GET, "/adiciones/**").hasAnyRole(ROL_ADMINISTRADOR, ROL_ASISTENTE)
                         // Gestión del establecimiento (mesas, caja, cierre): solo administrador
                         .anyRequest().hasRole(ROL_ADMINISTRADOR)
                 )

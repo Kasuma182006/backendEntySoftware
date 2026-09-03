@@ -4,8 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-
-import com.entysoftware.aplication.model.Propietarios;
+import com.entysoftware.aplication.model.models.Propietarios;
 
 
 public interface PropietariosRepository extends JpaRepository<Propietarios,String> {
