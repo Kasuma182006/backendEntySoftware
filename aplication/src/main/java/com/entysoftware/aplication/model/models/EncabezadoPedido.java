@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "encabezado_pedidos")
 @Data
 @AllArgsConstructor
-public class EncabezadoPedidos {
+public class EncabezadoPedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_pedido")
@@ -35,7 +35,7 @@ public class EncabezadoPedidos {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonManagedReference
     @JoinColumn(name = "FK_id_mesa", referencedColumnName ="id_mesa" )
-    private Mesas idMesa;
+    private Mesa idMesa;
 
     @Column(name = "tipo_pago")
     private String tipoPago;
@@ -58,7 +58,7 @@ public class EncabezadoPedidos {
     // (y sus adiciones, por cascada) que se quitan de la colección se eliminan de la BD.
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<CuerpoPedidos> detalles;
+    private List<CuerpoPedido> detalles;
 
 
 }

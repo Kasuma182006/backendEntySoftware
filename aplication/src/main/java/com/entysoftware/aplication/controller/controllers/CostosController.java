@@ -31,7 +31,7 @@ public class CostosController {
 
     @Operation(
         summary = "Registrar un costo",
-        description = "Registra un nuevo costo (egreso) para el establecimiento indicado en el cuerpo de la petición. La fecha del costo la asigna el backend automáticamente. Exclusivo del rol ADMINISTRADOR. Recuerda que el campo 'TipoPago' debe ser un String como 'EFECTIVO' o 'TRANSFERENCIA' dependiendo dek tipo de costo que haya sido"
+        description = "Registra un nuevo costo (egreso) para el establecimiento indicado en el cuerpo de la petición. La fecha del costo la asigna el backend automáticamente. Exclusivo del rol ADMINISTRADOR. Recuerda que el campo 'TipoPago' debe ser un String como 'EFECTIVO' o 'TRANSFERENCIA' dependiendo del tipo de costo que haya sido"
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Costo registrado correctamente."),

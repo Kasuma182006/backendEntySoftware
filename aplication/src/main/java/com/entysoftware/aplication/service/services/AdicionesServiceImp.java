@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.entysoftware.aplication.error.ObjetosNoEncontradosExepcion;
 import com.entysoftware.aplication.mapper.MapperAdicionesDto;
 import com.entysoftware.aplication.model.dto.AdicionesDto;
-import com.entysoftware.aplication.model.models.Adiciones;
+import com.entysoftware.aplication.model.models.Adicion;
 import com.entysoftware.aplication.model.models.Establecimiento;
 import com.entysoftware.aplication.repository.AdicionesRepository;
 import com.entysoftware.aplication.repository.EstablecimientoRepository;
@@ -34,7 +34,7 @@ public class AdicionesServiceImp implements AdicionesInterface {
     }
 
     public ResponseEntity<List<AdicionesDto>> listarAdiciones(Integer idEstablecimiento) {
-        List<Adiciones> listaAdiciones = adicionesRepository.findByIdEstablecimiento(idEstablecimiento);
+        List<Adicion> listaAdiciones = adicionesRepository.findByIdEstablecimiento(idEstablecimiento);
         List<AdicionesDto> listaAdicionesDto = listaAdiciones.stream()
                                                                .map(mapperAdicionesDto::adicionesToDto)
                                                                .toList();
@@ -48,8 +48,8 @@ public class AdicionesServiceImp implements AdicionesInterface {
         Establecimiento establecimiento = establecimientoRepository.findById(adicionDto.getIdEstablecimiento())
             .orElseThrow(() -> new ObjetosNoEncontradosExepcion("El establecimiento con ID " + adicionDto.getIdEstablecimiento() + " no existe"));
 
-        Adiciones adicion = mapperAdicionesDto.dtoToAdiciones(adicionDto, establecimiento);
-        Adiciones adicionGuardada = adicionesRepository.save(adicion);
+        Adicion adicion = mapperAdicionesDto.dtoToAdiciones(adicionDto, establecimiento);
+        Adicion adicionGuardada = adicionesRepository.save(adicion);
 
         return ResponseEntity.ok(mapperAdicionesDto.adicionesToDto(adicionGuardada));
     }
@@ -57,7 +57,7 @@ public class AdicionesServiceImp implements AdicionesInterface {
     @SuppressWarnings("null")
     @Transactional
     public ResponseEntity<String> editarAdicion(AdicionesDto adicionDto) {
-        Adiciones adicionExistente = adicionesRepository.findById(adicionDto.getIdAdicion())
+        Adicion adicionExistente = adicionesRepository.findById(adicionDto.getIdAdicion())
             .orElseThrow(() -> new ObjetosNoEncontradosExepcion("La adición con ID " + adicionDto.getIdAdicion() + " no existe"));
 
         if (adicionDto.getNombre() != null) {

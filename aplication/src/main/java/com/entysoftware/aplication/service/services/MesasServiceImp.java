@@ -10,7 +10,7 @@ import com.entysoftware.aplication.error.ObjetosNoEncontradosExepcion;
 import com.entysoftware.aplication.mapper.MapperMesasDto;
 import com.entysoftware.aplication.model.dto.MesasDto;
 import com.entysoftware.aplication.model.models.Establecimiento;
-import com.entysoftware.aplication.model.models.Mesas;
+import com.entysoftware.aplication.model.models.Mesa;
 import com.entysoftware.aplication.repository.EstablecimientoRepository;
 import com.entysoftware.aplication.repository.MesasRepository;
 import com.entysoftware.aplication.service.interfaces.MesasInterface;
@@ -34,7 +34,7 @@ public class MesasServiceImp implements MesasInterface {
     }
 
     public ResponseEntity<List<MesasDto>> listarMesas(Integer idEstablecimiento){
-        List<Mesas> listaMesas = mesasRepository.findByFK_id_establecimiento(idEstablecimiento);
+        List<Mesa> listaMesas = mesasRepository.findByFK_id_establecimiento(idEstablecimiento);
         List<MesasDto> listaMesasDto = listaMesas.stream()
                                                   .map(mapperMesasDto::MesasToDto)
                                                   .toList();
@@ -48,8 +48,8 @@ public class MesasServiceImp implements MesasInterface {
         Establecimiento establecimiento = establecimientoRepository.findById(mesaDto.getIdEstablecimiento())
             .orElseThrow(() -> new ObjetosNoEncontradosExepcion("El establecimiento con ID " + mesaDto.getIdEstablecimiento() + " no existe"));
 
-        Mesas mesa = mapperMesasDto.dtoToMesas(mesaDto, establecimiento);
-        Mesas mesaGuardada = mesasRepository.save(mesa);
+        Mesa mesa = mapperMesasDto.dtoToMesas(mesaDto, establecimiento);
+        Mesa mesaGuardada = mesasRepository.save(mesa);
 
         return ResponseEntity.ok(mapperMesasDto.MesasToDto(mesaGuardada));
     }
@@ -57,7 +57,7 @@ public class MesasServiceImp implements MesasInterface {
     @SuppressWarnings("null")
     @Transactional
     public ResponseEntity<String> editarMesa(MesasDto mesaDto){
-        Mesas mesaExistente = mesasRepository.findById(mesaDto.getIdMesa())
+        Mesa mesaExistente = mesasRepository.findById(mesaDto.getIdMesa())
             .orElseThrow(() -> new ObjetosNoEncontradosExepcion("La mesa con ID " + mesaDto.getIdMesa() + " no existe"));
 
         if (mesaDto.getNombreMesa() != null) {
@@ -79,7 +79,7 @@ public class MesasServiceImp implements MesasInterface {
             throw new ObjetosNoEncontradosExepcion("La mesa con ID " + idMesa + " no existe");
         }
 
-       Optional<Mesas> mesaEliminada = mesasRepository.findById(idMesa);
+       Optional<Mesa> mesaEliminada = mesasRepository.findById(idMesa);
         mesaEliminada.get().setEliminada(true);
         mesasRepository.save(mesaEliminada.get());
         

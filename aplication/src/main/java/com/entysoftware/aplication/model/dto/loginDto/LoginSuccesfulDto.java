@@ -3,7 +3,7 @@ package com.entysoftware.aplication.model.dto.loginDto;
 import java.util.List;
 
 import com.entysoftware.aplication.model.dto.MesasDto;
-import com.entysoftware.aplication.model.models.Categorias;
+import com.entysoftware.aplication.model.models.Categoria;
 import com.entysoftware.aplication.model.models.Inventario;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,7 +37,7 @@ public class LoginSuccesfulDto {
     private List<MesasDto> mesas;
 
     @Schema(description = "Listado de categorías de productos registradas en el establecimiento.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private List<Categorias> categorias;
+    private List<Categoria> categorias;
 
     @Schema(description = "Listado de productos del inventario del establecimiento.", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<Inventario> inventario;

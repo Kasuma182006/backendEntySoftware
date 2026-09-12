@@ -31,7 +31,7 @@ import lombok.ToString;
 @Data
 @Entity
 @Table(name = "cuerpo_pedidos")
-public class CuerpoPedidos {
+public class CuerpoPedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +42,7 @@ public class CuerpoPedidos {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FK_id_pedido", referencedColumnName = "id_pedido")
     @JsonBackReference
-    private EncabezadoPedidos pedido;
+    private EncabezadoPedido pedido;
 
     @ManyToOne
     @JoinColumn(name = "FK_id_inventario", referencedColumnName = "id_inventario")
@@ -64,7 +64,7 @@ public class CuerpoPedidos {
     private List<CuerpoPedidosAdiciones> adiciones = new ArrayList<>();
 
     /** Constructor de conveniencia (sin adiciones) para no romper llamadas existentes. */
-    public CuerpoPedidos(Integer idCuerpo, EncabezadoPedidos pedido, Inventario idInventario, Integer cantidad) {
+    public CuerpoPedido(Integer idCuerpo, EncabezadoPedido pedido, Inventario idInventario, Integer cantidad) {
         this.idCuerpo = idCuerpo;
         this.pedido = pedido;
         this.idInventario = idInventario;

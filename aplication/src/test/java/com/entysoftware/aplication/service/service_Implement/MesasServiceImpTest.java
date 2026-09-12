@@ -28,7 +28,7 @@ import com.entysoftware.aplication.error.ObjetosNoEncontradosExepcion;
 import com.entysoftware.aplication.mapper.MapperMesasDto;
 import com.entysoftware.aplication.model.dto.MesasDto;
 import com.entysoftware.aplication.model.models.Establecimiento;
-import com.entysoftware.aplication.model.models.Mesas;
+import com.entysoftware.aplication.model.models.Mesa;
 import com.entysoftware.aplication.repository.EstablecimientoRepository;
 import com.entysoftware.aplication.repository.MesasRepository;
 import com.entysoftware.aplication.service.services.MesasServiceImp;
@@ -48,8 +48,8 @@ class MesasServiceImpTest {
     @InjectMocks
     private MesasServiceImp mesasServiceImp;
 
-    private Mesas crearMesa(Integer id, Integer idEstablecimiento, String nombre, Boolean estado) {
-        Mesas mesa = new Mesas();
+    private Mesa crearMesa(Integer id, Integer idEstablecimiento, String nombre, Boolean estado) {
+        Mesa mesa = new Mesa();
         mesa.setIdMesa(id);
         mesa.setIdEstablecimiento(idEstablecimiento);
         mesa.setNombreMesa(nombre);
@@ -64,7 +64,7 @@ class MesasServiceImpTest {
         void givenEstablecimientoConMesas_whenListarMesas_thenRetornaListaDeMesasDto() {
             // Arrange
             Integer idEstablecimiento = 1;
-            Mesas mesa = crearMesa(1, idEstablecimiento, "Mesa 1", false);
+            Mesa mesa = crearMesa(1, idEstablecimiento, "Mesa 1", false);
             MesasDto mesaDto = new MesasDto(1, idEstablecimiento, "Mesa 1", false);
             when(mesasRepository.findByFK_id_establecimiento(idEstablecimiento)).thenReturn(List.of(mesa));
             when(mapperMesasDto.MesasToDto(mesa)).thenReturn(mesaDto);
@@ -105,8 +105,8 @@ class MesasServiceImpTest {
             // Arrange
             MesasDto mesaDto = new MesasDto(null, 1, "Mesa 5", false);
             Establecimiento establecimiento = new Establecimiento(1, "Restaurante", "prop-1", null, "ACTIVO");
-            Mesas mesaSinGuardar = crearMesa(null, 1, "Mesa 5", false);
-            Mesas mesaGuardada = crearMesa(9, 1, "Mesa 5", false);
+            Mesa mesaSinGuardar = crearMesa(null, 1, "Mesa 5", false);
+            Mesa mesaGuardada = crearMesa(9, 1, "Mesa 5", false);
             MesasDto mesaDtoGuardada = new MesasDto(9, 1, "Mesa 5", false);
 
             when(establecimientoRepository.findById(1)).thenReturn(Optional.of(establecimiento));
@@ -144,7 +144,7 @@ class MesasServiceImpTest {
         void givenMesaExistente_whenEditarMesaConNombreYEstado_thenActualizaYRetornaMensajeExito() {
             // Arrange
             MesasDto mesaDto = new MesasDto(1, 1, "Mesa Renombrada", true);
-            Mesas mesaExistente = crearMesa(1, 1, "Mesa 1", false);
+            Mesa mesaExistente = crearMesa(1, 1, "Mesa 1", false);
             when(mesasRepository.findById(1)).thenReturn(Optional.of(mesaExistente));
 
             // Act
@@ -162,7 +162,7 @@ class MesasServiceImpTest {
         void givenMesaExistenteConCamposNulos_whenEditarMesa_thenConservaValoresOriginales() {
             // Arrange
             MesasDto mesaDto = new MesasDto(1, 1, null, null);
-            Mesas mesaExistente = crearMesa(1, 1, "Mesa 1", false);
+            Mesa mesaExistente = crearMesa(1, 1, "Mesa 1", false);
             when(mesasRepository.findById(1)).thenReturn(Optional.of(mesaExistente));
 
             // Act

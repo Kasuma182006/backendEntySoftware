@@ -48,18 +48,18 @@ public class CuerpoPedidosAdiciones {
     @JsonBackReference
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private CuerpoPedidos cuerpoPedido;
+    private CuerpoPedido cuerpoPedido;
 
     /** Adición del catálogo. Solo lectura desde aquí: no se cascadea. */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "FK_id_adicion", referencedColumnName = "id_adicion")
-    private Adiciones adicion;
+    private Adicion adicion;
 
     @Column(name = "cantidad_adicion")
     private Integer cantidadAdicion;
 
     /** Constructor de conveniencia usado por la capa de servicio al construir el grafo. */
-    public CuerpoPedidosAdiciones(CuerpoPedidos cuerpoPedido, Adiciones adicion, Integer cantidadAdicion) {
+    public CuerpoPedidosAdiciones(CuerpoPedido cuerpoPedido, Adicion adicion, Integer cantidadAdicion) {
         this.cuerpoPedido = cuerpoPedido;
         this.adicion = adicion;
         this.cantidadAdicion = cantidadAdicion;

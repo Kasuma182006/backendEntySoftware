@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "adiciones")
 @BatchSize(size = 100) // mitiga N+1 al resolver la relación @ManyToOne desde CuerpoPedidosAdiciones
 @Schema(description = "Adición del catálogo del establecimiento que puede agregarse a un producto de un pedido.")
-public class Adiciones {
+public class Adicion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

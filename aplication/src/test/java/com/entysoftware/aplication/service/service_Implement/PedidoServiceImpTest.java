@@ -32,12 +32,12 @@ import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.AdicionPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.DetallesPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.PedidosDto;
-import com.entysoftware.aplication.model.models.Adiciones;
-import com.entysoftware.aplication.model.models.CuerpoPedidos;
+import com.entysoftware.aplication.model.models.Adicion;
+import com.entysoftware.aplication.model.models.CuerpoPedido;
 import com.entysoftware.aplication.model.models.CuerpoPedidosAdiciones;
-import com.entysoftware.aplication.model.models.EncabezadoPedidos;
+import com.entysoftware.aplication.model.models.EncabezadoPedido;
 import com.entysoftware.aplication.model.models.Inventario;
-import com.entysoftware.aplication.model.models.Mesas;
+import com.entysoftware.aplication.model.models.Mesa;
 import com.entysoftware.aplication.repository.AdicionesRepository;
 import com.entysoftware.aplication.repository.EncabezadoPedidosRepository;
 import com.entysoftware.aplication.repository.InventarioRepository;
@@ -67,8 +67,8 @@ class PedidoServiceImpTest {
     @InjectMocks
     private PedidoServiceImp pedidoServiceImp;
 
-    private Mesas crearMesa(Integer id) {
-        Mesas mesa = new Mesas();
+    private Mesa crearMesa(Integer id) {
+        Mesa mesa = new Mesa();
         mesa.setIdMesa(id);
         return mesa;
     }
@@ -82,12 +82,12 @@ class PedidoServiceImpTest {
             DetallesPedidoDto detalleDto = new DetallesPedidoDto(null, 100, null, 2);
             PedidosDto pedidoDto = new PedidosDto(null, 1, null, null, 2000, 15000, null, "sin cebolla", List.of(detalleDto));
 
-            Mesas mesaProxy = crearMesa(1);
+            Mesa mesaProxy = crearMesa(1);
             Inventario producto = new Inventario(100, "Hamburguesa", 3, "desc", 12000);
             when(mesasRepository.getReferenceById(1)).thenReturn(mesaProxy);
             when(inventarioRepository.getReferenceById(100)).thenReturn(producto);
-            when(encabezadoPedidosRepository.save(any(EncabezadoPedidos.class))).thenAnswer(invocation -> {
-                EncabezadoPedidos encabezado = invocation.getArgument(0);
+            when(encabezadoPedidosRepository.save(any(EncabezadoPedido.class))).thenAnswer(invocation -> {
+                EncabezadoPedido encabezado = invocation.getArgument(0);
                 encabezado.setIdPedido(55);
                 return encabezado;
             });
@@ -99,9 +99,9 @@ class PedidoServiceImpTest {
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertEquals(55, response.getBody());
 
-            ArgumentCaptor<EncabezadoPedidos> captor = ArgumentCaptor.forClass(EncabezadoPedidos.class);
+            ArgumentCaptor<EncabezadoPedido> captor = ArgumentCaptor.forClass(EncabezadoPedido.class);
             verify(encabezadoPedidosRepository, times(1)).save(captor.capture());
-            EncabezadoPedidos guardado = captor.getValue();
+            EncabezadoPedido guardado = captor.getValue();
             assertEquals("EFECTIVO", guardado.getTipoPago());
             assertEquals("EN ESPERA", guardado.getEstadoPedido());
             assertEquals(2000, guardado.getValorDomicilio());
@@ -122,13 +122,13 @@ class PedidoServiceImpTest {
             when(mesasRepository.getReferenceById(1)).thenReturn(crearMesa(1));
             when(inventarioRepository.getReferenceById(1)).thenReturn(new Inventario(1, "A", 1, "d", 1000));
             when(inventarioRepository.getReferenceById(2)).thenReturn(new Inventario(2, "B", 1, "d", 2000));
-            when(encabezadoPedidosRepository.save(any(EncabezadoPedidos.class))).thenAnswer(invocation -> invocation.getArgument(0));
+            when(encabezadoPedidosRepository.save(any(EncabezadoPedido.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             // Act
             pedidoServiceImp.crearPedido(pedidoDto);
 
             // Assert
-            ArgumentCaptor<EncabezadoPedidos> captor = ArgumentCaptor.forClass(EncabezadoPedidos.class);
+            ArgumentCaptor<EncabezadoPedido> captor = ArgumentCaptor.forClass(EncabezadoPedido.class);
             verify(encabezadoPedidosRepository).save(captor.capture());
             assertEquals(2, captor.getValue().getDetalles().size());
             verify(inventarioRepository, times(1)).getReferenceById(1);
@@ -142,19 +142,19 @@ class PedidoServiceImpTest {
             DetallesPedidoDto detalleDto = new DetallesPedidoDto(null, 100, null, 1, List.of(adicionDto));
             PedidosDto pedidoDto = new PedidosDto(null, 1, null, null, 0, 12000, null, "", List.of(detalleDto));
 
-            Adiciones adicionProxy = new Adiciones(9, 1, "Queso extra",100);
+            Adicion adicionProxy = new Adicion(9, 1, "Queso extra",100);
             when(mesasRepository.getReferenceById(1)).thenReturn(crearMesa(1));
             when(inventarioRepository.getReferenceById(100)).thenReturn(new Inventario(100, "Hamburguesa", 1, "d", 12000));
             when(adicionesRepository.getReferenceById(9)).thenReturn(adicionProxy);
-            when(encabezadoPedidosRepository.save(any(EncabezadoPedidos.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(encabezadoPedidosRepository.save(any(EncabezadoPedido.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // Act
             pedidoServiceImp.crearPedido(pedidoDto);
 
             // Assert
-            ArgumentCaptor<EncabezadoPedidos> captor = ArgumentCaptor.forClass(EncabezadoPedidos.class);
+            ArgumentCaptor<EncabezadoPedido> captor = ArgumentCaptor.forClass(EncabezadoPedido.class);
             verify(encabezadoPedidosRepository).save(captor.capture());
-            CuerpoPedidos cuerpo = captor.getValue().getDetalles().get(0);
+            CuerpoPedido cuerpo = captor.getValue().getDetalles().get(0);
             assertEquals(1, cuerpo.getAdiciones().size());
             CuerpoPedidosAdiciones fila = cuerpo.getAdiciones().get(0);
             assertEquals(adicionProxy, fila.getAdicion());
@@ -171,10 +171,10 @@ class PedidoServiceImpTest {
         void givenPedidosDelDia_whenPedidosHoy_thenRetornaListaConDetallesMapeados() {
             // Arrange
             Integer idEstablecimiento = 1;
-            Mesas mesa = crearMesa(3);
+            Mesa mesa = crearMesa(3);
             Inventario producto = new Inventario(100, "Papas", 1, "desc", 5000);
-            EncabezadoPedidos encabezado = new EncabezadoPedidos(1, mesa, "EFECTIVO", "EN ESPERA", 0, 15000, LocalDate.now(), "desc", new ArrayList<>());
-            CuerpoPedidos cuerpo = new CuerpoPedidos(7, encabezado, producto, 3);
+            EncabezadoPedido encabezado = new EncabezadoPedido(1, mesa, "EFECTIVO", "EN ESPERA", 0, 15000, LocalDate.now(), "desc", new ArrayList<>());
+            CuerpoPedido cuerpo = new CuerpoPedido(7, encabezado, producto, 3);
             encabezado.setDetalles(List.of(cuerpo));
 
             when(encabezadoPedidosRepository.buscarPedidosDeHoyConDetalles(any(), any(LocalDate.class))).thenReturn(List.of(encabezado));
@@ -224,10 +224,10 @@ class PedidoServiceImpTest {
             DetallesPedidoDto nuevoDetalle = new DetallesPedidoDto(null, 50, null, 4);
             PedidosDto editar = new PedidosDto(1, 2, "transferencia", "PAGO", 1000, 20000, null, "nueva desc", List.of(nuevoDetalle));
 
-            EncabezadoPedidos pedidoExistente = new EncabezadoPedidos(1, crearMesa(1), "EFECTIVO", "EN ESPERA", 0, 5000, LocalDate.now(), "vieja desc", new ArrayList<>());
+            EncabezadoPedido pedidoExistente = new EncabezadoPedido(1, crearMesa(1), "EFECTIVO", "EN ESPERA", 0, 5000, LocalDate.now(), "vieja desc", new ArrayList<>());
             when(encabezadoPedidosRepository.findById(1)).thenReturn(Optional.of(pedidoExistente));
 
-            Mesas mesaNueva = crearMesa(2);
+            Mesa mesaNueva = crearMesa(2);
             Inventario productoNuevo = new Inventario(50, "Gaseosa", 1, "desc", 3000);
             when(mesasRepository.getReferenceById(2)).thenReturn(mesaNueva);
             when(inventarioRepository.getReferenceById(50)).thenReturn(productoNuevo);
@@ -254,7 +254,7 @@ class PedidoServiceImpTest {
         void givenPedidoExistenteYCamposNulos_whenEditarPedido_thenConservaValoresOriginales() {
             // Arrange
             PedidosDto editar = new PedidosDto(1, null, null, null, null, null, null, null, null);
-            EncabezadoPedidos pedidoExistente = new EncabezadoPedidos(1, crearMesa(1), "EFECTIVO", "EN ESPERA", 0, 5000, LocalDate.now(), "vieja desc", new ArrayList<>());
+            EncabezadoPedido pedidoExistente = new EncabezadoPedido(1, crearMesa(1), "EFECTIVO", "EN ESPERA", 0, 5000, LocalDate.now(), "vieja desc", new ArrayList<>());
             when(encabezadoPedidosRepository.findById(1)).thenReturn(Optional.of(pedidoExistente));
 
             // Act
@@ -277,11 +277,11 @@ class PedidoServiceImpTest {
             DetallesPedidoDto nuevoDetalle = new DetallesPedidoDto(null, 50, null, 1, List.of(adicionDto));
             PedidosDto editar = new PedidosDto(1, null, null, null, null, null, null, null, List.of(nuevoDetalle));
 
-            EncabezadoPedidos pedidoExistente = new EncabezadoPedidos(1, crearMesa(1), "EFECTIVO", "EN ESPERA", 0, 5000, LocalDate.now(), "desc", new ArrayList<>());
-            pedidoExistente.getDetalles().add(new CuerpoPedidos(99, pedidoExistente, new Inventario(1, "Viejo", 1, "d", 1000), 1));
+            EncabezadoPedido pedidoExistente = new EncabezadoPedido(1, crearMesa(1), "EFECTIVO", "EN ESPERA", 0, 5000, LocalDate.now(), "desc", new ArrayList<>());
+            pedidoExistente.getDetalles().add(new CuerpoPedido(99, pedidoExistente, new Inventario(1, "Viejo", 1, "d", 1000), 1));
             when(encabezadoPedidosRepository.findById(1)).thenReturn(Optional.of(pedidoExistente));
 
-            Adiciones adicionProxy = new Adiciones(9, 1, "Tocineta",100);
+            Adicion adicionProxy = new Adicion(9, 1, "Tocineta",100);
             when(inventarioRepository.getReferenceById(50)).thenReturn(new Inventario(50, "Gaseosa", 1, "d", 3000));
             when(adicionesRepository.getReferenceById(9)).thenReturn(adicionProxy);
 
@@ -291,7 +291,7 @@ class PedidoServiceImpTest {
             // Assert
             assertEquals("Pedido actualizado", response.getBody());
             assertEquals(1, pedidoExistente.getDetalles().size());
-            CuerpoPedidos cuerpo = pedidoExistente.getDetalles().get(0);
+            CuerpoPedido cuerpo = pedidoExistente.getDetalles().get(0);
             assertEquals(1, cuerpo.getAdiciones().size());
             assertEquals(adicionProxy, cuerpo.getAdiciones().get(0).getAdicion());
             assertEquals(3, cuerpo.getAdiciones().get(0).getCantidadAdicion());
@@ -317,7 +317,7 @@ class PedidoServiceImpTest {
         void givenPedidoExistente_whenPagoPedido_thenActualizaEstadoYRetornaFactura() {
             // Arrange
             PagarPedidoDto pago = new PagarPedidoDto(1, 20000, "EFECTIVO");
-            EncabezadoPedidos pedidoExistente = new EncabezadoPedidos(1, crearMesa(3), "EFECTIVO", "EN ESPERA", 0, 15000, LocalDate.now(), "desc", new ArrayList<>());
+            EncabezadoPedido pedidoExistente = new EncabezadoPedido(1, crearMesa(3), "EFECTIVO", "EN ESPERA", 0, 15000, LocalDate.now(), "desc", new ArrayList<>());
             when(encabezadoPedidosRepository.findById(1)).thenReturn(Optional.of(pedidoExistente));
 
             // Act

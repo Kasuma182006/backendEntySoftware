@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @Schema(description = "Categoría de productos del inventario de un establecimiento, tal como se devuelve embebida en la respuesta de login.")
-public class Categorias {
+public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "Identificador de la categoría.", example = "2", accessMode = Schema.AccessMode.READ_ONLY)

@@ -7,28 +7,28 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.entysoftware.aplication.model.models.EncabezadoPedidos;
+import com.entysoftware.aplication.model.models.EncabezadoPedido;
 
-public interface EncabezadoPedidosRepository  extends JpaRepository<EncabezadoPedidos,Integer>{
+public interface EncabezadoPedidosRepository  extends JpaRepository<EncabezadoPedido,Integer>{
     
-    @Query("SELECT u FROM EncabezadoPedidos u " +
+    @Query("SELECT u FROM EncabezadoPedido u " +
        "JOIN FETCH u.idMesa p " +
        "JOIN FETCH u.detalles d " +
        "JOIN FETCH d.idInventario " +
        "WHERE p.idEstablecimiento = :idEstablecimiento AND u.fechaPedido = :fecha")
-    List<EncabezadoPedidos> buscarPedidosDeHoyConDetalles(
+    List<EncabezadoPedido> buscarPedidosDeHoyConDetalles(
         @Param("idEstablecimiento") Integer idEstablecimiento,
         @Param("fecha") LocalDate fecha
     );
 
-    @Query("SELECT COUNT(u) FROM EncabezadoPedidos u " +
+    @Query("SELECT COUNT(u) FROM EncabezadoPedido u " +
        "WHERE u.idMesa.idEstablecimiento = :idEstablecimiento AND u.fechaPedido = :fecha")
     Integer contarPedidosDelDia(
         @Param("idEstablecimiento") Integer idEstablecimiento,
         @Param("fecha") LocalDate fecha
     );
 
-    @Query("SELECT COALESCE(SUM(u.precioTotal), 0)  - COALESCE(SUM(u.valorDomicilio),0) FROM EncabezadoPedidos u " +
+    @Query("SELECT COALESCE(SUM(u.precioTotal), 0)  - COALESCE(SUM(u.valorDomicilio),0) FROM EncabezadoPedido u " +
        "WHERE u.idMesa.idEstablecimiento = :idEstablecimiento " +
        "AND u.fechaPedido = :fecha AND u.tipoPago = 'TRANSFERENCIA'")
     Integer sumarIngresosTransferenciaDelDia(
@@ -36,7 +36,7 @@ public interface EncabezadoPedidosRepository  extends JpaRepository<EncabezadoPe
         @Param("fecha") LocalDate fecha
     );
 
-    @Query("SELECT COALESCE(SUM(u.valorDomicilio), 0) FROM EncabezadoPedidos u " +
+    @Query("SELECT COALESCE(SUM(u.valorDomicilio), 0) FROM EncabezadoPedido u " +
        "WHERE u.idMesa.idEstablecimiento = :idEstablecimiento " +
        "AND u.fechaPedido = :fecha")
     Integer sumarIngresoDomicilio(
@@ -45,7 +45,7 @@ public interface EncabezadoPedidosRepository  extends JpaRepository<EncabezadoPe
     );
 
 
-    @Query("SELECT COALESCE(SUM(u.precioTotal), 0) - COALESCE(SUM(u.valorDomicilio),0) FROM EncabezadoPedidos u " +
+    @Query("SELECT COALESCE(SUM(u.precioTotal), 0) - COALESCE(SUM(u.valorDomicilio),0) FROM EncabezadoPedido u " +
        "WHERE u.idMesa.idEstablecimiento = :idEstablecimiento " +
        "AND u.fechaPedido = :fecha AND u.tipoPago = 'EFECTIVO'")
     Integer sumarIngresosEfectivoDelDia(

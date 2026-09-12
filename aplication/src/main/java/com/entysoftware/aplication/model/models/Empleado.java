@@ -1,7 +1,5 @@
 package com.entysoftware.aplication.model.models;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,24 +11,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
-@Table(name = "costos")
+@Table(name = "empleados")
 @Data
 @AllArgsConstructor
-public class Costos {
+public class Empleado {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_costos")
-    private Integer idCostos;
-
-    @Column(name = "Fk_id_establecimiento")
-    private int idEstablecimiento;
-
-    @Column(name = "valor_costo")
-    private int valorCosto;
-
-    @Column(name = "tipo_pago")
-    private String tipoPago;
-
-    @Column(name = "fecha_costo")
-    private LocalDate fecha;
+    private Integer id;
+    
+    @Column(name = "numero_identificacion")
+    private String numeroIdentificacion;
+    @Column(name = "FK_id_establecimiento")
+    private Integer idEstablecimiento;
+    
+    private String nombre;
+    private String password;
+    private String rol;
+     
 }

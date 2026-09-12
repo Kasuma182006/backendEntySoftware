@@ -6,11 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.entysoftware.aplication.model.models.Costos;
+import com.entysoftware.aplication.model.models.Costo;
 
-public interface CostosRepository extends JpaRepository<Costos, Integer> {
+public interface CostosRepository extends JpaRepository<Costo, Integer> {
 
-    @Query("SELECT COALESCE(SUM(c.valorCosto), 0) FROM Costos c " +
+    @Query("SELECT COALESCE(SUM(c.valorCosto), 0) FROM Costo c " +
        "WHERE c.idEstablecimiento = :idEstablecimiento " +
        "AND c.fecha = :fecha AND c.tipoPago = 'TRANSFERENCIA'")
     Integer sumarGastosTransferenciaDelDia(
@@ -18,7 +18,7 @@ public interface CostosRepository extends JpaRepository<Costos, Integer> {
         @Param("fecha") LocalDate fecha
     );
 
-    @Query("SELECT COALESCE(SUM(c.valorCosto), 0) FROM Costos c " +
+    @Query("SELECT COALESCE(SUM(c.valorCosto), 0) FROM Costo c " +
        "WHERE c.idEstablecimiento = :idEstablecimiento " +
        "AND c.fecha = :fecha AND c.tipoPago = 'EFECTIVO'")
     Integer sumarGastosEfectivoDelDia(

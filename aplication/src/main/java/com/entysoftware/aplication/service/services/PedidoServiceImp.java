@@ -16,10 +16,10 @@ import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.AdicionPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.DetallesPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.PedidosDto;
-import com.entysoftware.aplication.model.models.CuerpoPedidos;
+import com.entysoftware.aplication.model.models.CuerpoPedido;
 import com.entysoftware.aplication.model.models.CuerpoPedidosAdiciones;
-import com.entysoftware.aplication.model.models.EncabezadoPedidos;
-import com.entysoftware.aplication.model.models.Mesas;
+import com.entysoftware.aplication.model.models.EncabezadoPedido;
+import com.entysoftware.aplication.model.models.Mesa;
 import com.entysoftware.aplication.repository.AdicionesRepository;
 import com.entysoftware.aplication.repository.EncabezadoPedidosRepository;
 import com.entysoftware.aplication.repository.InventarioRepository;
@@ -69,9 +69,9 @@ public class PedidoServiceImp implements PedidosInterface {
     @Transactional
     public ResponseEntity<Integer> crearPedido(PedidosDto pedido) {
 
-        Mesas mesaProxy = mesasRepository.getReferenceById(pedido.getIdMesa());
+        Mesa mesaProxy = mesasRepository.getReferenceById(pedido.getIdMesa());
 
-        EncabezadoPedidos encabezadoPedido = new EncabezadoPedidos(
+        EncabezadoPedido encabezadoPedido = new EncabezadoPedido(
             null,
             mesaProxy,
             TIPO_PAGO_EFECTIVO,
@@ -83,12 +83,12 @@ public class PedidoServiceImp implements PedidosInterface {
             new ArrayList<>()
         );
 
-        List<CuerpoPedidos> listaCuerpoPedido = construirDetallesPedido(pedido.getPedido(), encabezadoPedido);
+        List<CuerpoPedido> listaCuerpoPedido = construirDetallesPedido(pedido.getPedido(), encabezadoPedido);
         encabezadoPedido.setDetalles(listaCuerpoPedido);
 
         log.debug("lista de productos pedidos: {}", listaCuerpoPedido);
         // Cascada: EncabezadoPedidos -> CuerpoPedidos -> CuerpoPedidosAdiciones.
-        EncabezadoPedidos encabezadoGuardado = encabezadoPedidosRepository.save(encabezadoPedido);
+        EncabezadoPedido encabezadoGuardado = encabezadoPedidosRepository.save(encabezadoPedido);
 
         log.debug("se han creado los cuerpos del pedido y sus adiciones en la base de datos");
 
@@ -102,7 +102,7 @@ public class PedidoServiceImp implements PedidosInterface {
 
     public ResponseEntity<List<PedidosDto>> pedidosHoy(Integer idEstablecimiento) {
 
-        List<EncabezadoPedidos> pedidos =
+        List<EncabezadoPedido> pedidos =
             encabezadoPedidosRepository.buscarPedidosDeHoyConDetalles(idEstablecimiento, LocalDate.now());
 
         List<PedidosDto> listaPedidosDto = pedidos.stream()
@@ -112,7 +112,7 @@ public class PedidoServiceImp implements PedidosInterface {
         return ResponseEntity.ok(listaPedidosDto);
     }
 
-    private PedidosDto convertirAPedidoDto(EncabezadoPedidos encabezadoPedido) {
+    private PedidosDto convertirAPedidoDto(EncabezadoPedido encabezadoPedido) {
         PedidosDto dto = mapperPedidosDto.pedidosToEntity(encabezadoPedido);
         dto.setPedido(encabezadoPedido.getDetalles().stream()
                                       .map(this::convertirADetalleDto)
@@ -120,7 +120,7 @@ public class PedidoServiceImp implements PedidosInterface {
         return dto;
     }
 
-    private DetallesPedidoDto convertirADetalleDto(CuerpoPedidos cuerpo) {
+    private DetallesPedidoDto convertirADetalleDto(CuerpoPedido cuerpo) {
         DetallesPedidoDto dto = new DetallesPedidoDto(
             cuerpo.getIdCuerpo(),
             cuerpo.getIdInventario().getIdInventario(),
@@ -150,7 +150,7 @@ public class PedidoServiceImp implements PedidosInterface {
     @Transactional
     public ResponseEntity<String> editarPedido(PedidosDto editarPedido) {
 
-        EncabezadoPedidos pedidoExistente = encabezadoPedidosRepository.findById(editarPedido.getIdPedido())
+        EncabezadoPedido pedidoExistente = encabezadoPedidosRepository.findById(editarPedido.getIdPedido())
             .orElseThrow(() -> new EntityNotFoundException(
                 "El pedido con ID " + editarPedido.getIdPedido() + " no existe"));
 
@@ -165,7 +165,7 @@ public class PedidoServiceImp implements PedidosInterface {
         return ResponseEntity.ok("Pedido actualizado");
     }
 
-    private void actualizarDatosEncabezado(EncabezadoPedidos pedido, PedidosDto cambios) {
+    private void actualizarDatosEncabezado(EncabezadoPedido pedido, PedidosDto cambios) {
         if (cambios.getIdMesa() != null) {
             pedido.setIdMesa(mesasRepository.getReferenceById(cambios.getIdMesa()));
         }
@@ -191,8 +191,8 @@ public class PedidoServiceImp implements PedidosInterface {
     }
 
  
-    private void reemplazarDetalles(EncabezadoPedidos pedido, List<DetallesPedidoDto> nuevosDetalles) {
-        List<CuerpoPedidos> lineas = construirDetallesPedido(nuevosDetalles, pedido);
+    private void reemplazarDetalles(EncabezadoPedido pedido, List<DetallesPedidoDto> nuevosDetalles) {
+        List<CuerpoPedido> lineas = construirDetallesPedido(nuevosDetalles, pedido);
         pedido.getDetalles().clear();
         pedido.getDetalles().addAll(lineas);
     }
@@ -202,15 +202,15 @@ public class PedidoServiceImp implements PedidosInterface {
     // Construcción del grafo detalle + adiciones (compartido crear / editar)
     // ----------------------------------------------------------------------
 
-    private List<CuerpoPedidos> construirDetallesPedido(List<DetallesPedidoDto> detalles,
-                                                        EncabezadoPedidos encabezado) {
+    private List<CuerpoPedido> construirDetallesPedido(List<DetallesPedidoDto> detalles,
+                                                        EncabezadoPedido encabezado) {
         return detalles.stream()
                        .map(detalle -> construirCuerpoPedido(detalle, encabezado))
                        .toList();
     }
 
-    private CuerpoPedidos construirCuerpoPedido(DetallesPedidoDto detalle, EncabezadoPedidos encabezado) {
-        CuerpoPedidos cuerpo = new CuerpoPedidos(
+    private CuerpoPedido construirCuerpoPedido(DetallesPedidoDto detalle, EncabezadoPedido encabezado) {
+        CuerpoPedido cuerpo = new CuerpoPedido(
             detalle.getIdCuerpoPedido(),
             encabezado,
             inventarioRepository.getReferenceById(detalle.getIdProducto()),
@@ -242,8 +242,8 @@ public class PedidoServiceImp implements PedidosInterface {
     // ----------------------------------------------------------------------
 
     public ResponseEntity<FacturaPedidoDto> pagoPedido(PagarPedidoDto pago) {
-        Optional<EncabezadoPedidos> pedidoOptional = encabezadoPedidosRepository.findById(pago.getIdPedido());
-        EncabezadoPedidos pedido = pedidoOptional.orElseThrow();
+        Optional<EncabezadoPedido> pedidoOptional = encabezadoPedidosRepository.findById(pago.getIdPedido());
+        EncabezadoPedido pedido = pedidoOptional.orElseThrow();
 
         int calcularCambio = pago.getPagoPedido() - pedido.getPrecioTotal();
         pedido.setEstadoPedido(ESTADO_PEDIDO_PAGADO);

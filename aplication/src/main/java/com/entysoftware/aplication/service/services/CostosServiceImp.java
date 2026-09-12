@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.entysoftware.aplication.error.ObjetosNoEncontradosExepcion;
 import com.entysoftware.aplication.mapper.MapperCostosDto;
 import com.entysoftware.aplication.model.dto.CostosDto;
-import com.entysoftware.aplication.model.models.Costos;
+import com.entysoftware.aplication.model.models.Costo;
 import com.entysoftware.aplication.model.models.Establecimiento;
 import com.entysoftware.aplication.repository.CostosRepository;
 import com.entysoftware.aplication.repository.EstablecimientoRepository;
@@ -36,8 +36,8 @@ public class CostosServiceImp implements CostosInterface {
         Establecimiento establecimiento = establecimientoRepository.findById(costoDto.getIdEstablecimiento())
             .orElseThrow(() -> new ObjetosNoEncontradosExepcion("El establecimiento con ID " + costoDto.getIdEstablecimiento() + " no existe"));
 
-        Costos costo = mapperCostosDto.dtoToCostos(costoDto, establecimiento);
-        Costos costoGuardado = costosRepository.save(costo);
+        Costo costo = mapperCostosDto.dtoToCostos(costoDto, establecimiento);
+        Costo costoGuardado = costosRepository.save(costo);
 
         return ResponseEntity.ok("El costo se ha registrado correctamente por un valor de " + costoGuardado.getValorCosto());
     }

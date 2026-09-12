@@ -12,6 +12,7 @@ import com.entysoftware.aplication.controller.controllerAdviceDto.ControllerAdvi
 import com.entysoftware.aplication.error.BaseYaRegistrada;
 import com.entysoftware.aplication.error.EstablecimientoNoEncontradoException;
 import com.entysoftware.aplication.error.ObjetosNoEncontradosExepcion;
+import com.entysoftware.aplication.error.RangoFechasInvalidoException;
 import com.entysoftware.aplication.error.UsuarioNoEncontradoException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +26,9 @@ public class ControllerAdvice {
     private static final String ESTADO_NO_ENCONTRADO = "404";
     private static final String ERROR_NO_ENCONTRADO = "Not Found";
     private static final String ERROR_NO_ENCONTRADO_ALTERNATIVO = "No Found";
+
+    private static final String ESTADO_PETICION_INVALIDA = "400";
+    private static final String ERROR_PETICION_INVALIDA = "Bad Request";
 
     @ExceptionHandler(BaseYaRegistrada.class)
     public ResponseEntity<ControllerAdviceDto> handlerBaseYaRegistrada(BaseYaRegistrada except, HttpServletRequest request) {
@@ -44,6 +48,11 @@ public class ControllerAdvice {
     @ExceptionHandler(ObjetosNoEncontradosExepcion.class)
     public ResponseEntity<ControllerAdviceDto> handlerObjetosNoEncontradosExepcion(ObjetosNoEncontradosExepcion except, HttpServletRequest request) {
         return construirRespuestaError(HttpStatus.NOT_FOUND, ESTADO_NO_ENCONTRADO, ERROR_NO_ENCONTRADO_ALTERNATIVO, except.getMessage(), request);
+    }
+
+    @ExceptionHandler(RangoFechasInvalidoException.class)
+    public ResponseEntity<ControllerAdviceDto> handlerRangoFechasInvalidoException(RangoFechasInvalidoException except, HttpServletRequest request) {
+        return construirRespuestaError(HttpStatus.BAD_REQUEST, ESTADO_PETICION_INVALIDA, ERROR_PETICION_INVALIDA, except.getMessage(), request);
     }
 
     private ResponseEntity<ControllerAdviceDto> construirRespuestaError(@NonNull HttpStatus httpStatus, String status, String error, String mensaje, HttpServletRequest request) {

@@ -29,12 +29,12 @@ import com.entysoftware.aplication.error.UsuarioNoEncontradoException;
 import com.entysoftware.aplication.model.dto.loginDto.EstablecimientosDto;
 import com.entysoftware.aplication.model.dto.loginDto.LoginDto;
 import com.entysoftware.aplication.model.dto.loginDto.LoginSuccesfulDto;
-import com.entysoftware.aplication.model.models.Categorias;
-import com.entysoftware.aplication.model.models.Empleados;
+import com.entysoftware.aplication.model.models.Categoria;
+import com.entysoftware.aplication.model.models.Empleado;
 import com.entysoftware.aplication.model.models.Establecimiento;
 import com.entysoftware.aplication.model.models.Inventario;
-import com.entysoftware.aplication.model.models.Mesas;
-import com.entysoftware.aplication.model.models.Propietarios;
+import com.entysoftware.aplication.model.models.Mesa;
+import com.entysoftware.aplication.model.models.Propietario;
 import com.entysoftware.aplication.repository.CategoriasRepository;
 import com.entysoftware.aplication.repository.EmpleadosRepository;
 import com.entysoftware.aplication.repository.EstablecimientoRepository;
@@ -104,7 +104,7 @@ class LoginServiceImpTest {
             String identificacion = "emp-1";
             when(establecimientoRepository.buscarEstablecimiento(identificacion)).thenReturn(Collections.emptyList());
 
-            Empleados empleado = new Empleados(1, "emp-1", 2, "Juan", "1234", "mesero");
+            Empleado empleado = new Empleado(1, "emp-1", 2, "Juan", "1234", "mesero");
             when(empleadosRepository.establecimientosEmpleados(identificacion)).thenReturn(List.of(empleado));
 
             Establecimiento establecimiento = crearEstablecimiento(2);
@@ -156,14 +156,14 @@ class LoginServiceImpTest {
             Establecimiento establecimiento = crearEstablecimiento(1);
             when(establecimientoRepository.findById(1)).thenReturn(java.util.Optional.of(establecimiento));
 
-            Propietarios propietario = new Propietarios("prop-1", "Carlos", "1234", LocalDate.of(2024, 1, 1), null, "ACTIVO");
+            Propietario propietario = new Propietario("prop-1", "Carlos", "1234", LocalDate.of(2024, 1, 1), null, "ACTIVO");
             when(propietariosRepository.loginPropietario("prop-1", "1234")).thenReturn(propietario);
 
-            Mesas mesa = new Mesas();
+            Mesa mesa = new Mesa();
             mesa.setIdMesa(10);
             when(mesasRepository.findByFK_id_establecimiento(1)).thenReturn(List.of(mesa));
 
-            Categorias categoria = new Categorias(5, "Bebidas", 1);
+            Categoria categoria = new Categoria(5, "Bebidas", 1);
             when(categoriasRepository.findByFk_id_establecimiento(1)).thenReturn(List.of(categoria));
 
             Inventario inventario = new Inventario(20, "Gaseosa", 5, "Bebida fria", 3000);
@@ -199,7 +199,7 @@ class LoginServiceImpTest {
             when(mesasRepository.findByFK_id_establecimiento(1)).thenReturn(Collections.emptyList());
             when(categoriasRepository.findByFk_id_establecimiento(1)).thenReturn(Collections.emptyList());
 
-            Empleados empleado = new Empleados(3, "emp-1", 1, "Ana", "abcd", "mesero");
+            Empleado empleado = new Empleado(3, "emp-1", 1, "Ana", "abcd", "mesero");
             when(empleadosRepository.loginEmpleado(1, "emp-1", "abcd")).thenReturn(empleado);
             when(jwtService.generarToken("emp-1", "mesero")).thenReturn("token-empleado");
 

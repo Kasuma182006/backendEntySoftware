@@ -9,13 +9,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.entysoftware.aplication.model.dto.ProductoMasVendidoDto;
-import com.entysoftware.aplication.model.models.CuerpoPedidos;
+import com.entysoftware.aplication.model.models.CuerpoPedido;
 
-public interface CuerpoPedidosRepository extends JpaRepository<CuerpoPedidos,Integer> {
+public interface CuerpoPedidosRepository extends JpaRepository<CuerpoPedido,Integer> {
 
     @Query("SELECT new com.entysoftware.aplication.model.dto.ProductoMasVendidoDto(" +
        "cp.idInventario.nombre, SUM(cp.cantidad)) " +
-       "FROM CuerpoPedidos cp " +
+       "FROM CuerpoPedido cp " +
        "WHERE cp.pedido.idMesa.idEstablecimiento = :idEstablecimiento " +
        "AND cp.pedido.fechaPedido = :fecha " +
        "GROUP BY cp.idInventario.nombre " +
