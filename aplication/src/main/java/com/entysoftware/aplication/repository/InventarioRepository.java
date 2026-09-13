@@ -1,5 +1,7 @@
 package com.entysoftware.aplication.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +18,10 @@ public interface InventarioRepository extends JpaRepository<Inventario,Integer> 
 
     @Query("SELECT i FROM Inventario i JOIN Categoria c ON i.categoria = c.id WHERE c.idEstablecimiento = :idEstablecimiento")
     List<Inventario> findByFK_id_establecimiento(@Param("idEstablecimiento") int idEstablecimiento);
+
+    @Query(value = "SELECT i FROM Inventario i JOIN Categoria c ON i.categoria = c.id WHERE c.idEstablecimiento = :idEstablecimiento",
+           countQuery = "SELECT COUNT(i) FROM Inventario i JOIN Categoria c ON i.categoria = c.id WHERE c.idEstablecimiento = :idEstablecimiento")
+    Page<Inventario> buscarPorEstablecimiento(@Param("idEstablecimiento") Integer idEstablecimiento, Pageable pageable);
+
+    boolean existsByCategoriaAndNombreIgnoreCase(Integer categoria, String nombre);
 }

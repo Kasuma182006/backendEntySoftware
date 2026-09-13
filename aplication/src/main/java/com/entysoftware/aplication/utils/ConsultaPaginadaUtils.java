@@ -16,8 +16,20 @@ public final class ConsultaPaginadaUtils {
      * La página negativa se ajusta a 0 y el tamaño se limita al rango [1, TAMANO_PAGINA_MAXIMO].
      */
     public static Pageable construirPageableOrdenadoDesc(int pagina, int tamano, String campoOrden) {
+        return construirPageableOrdenado(pagina, tamano, campoOrden, Sort.Direction.DESC);
+    }
+
+    /**
+     * Construye un Pageable ordenado de forma ascendente por el campo indicado.
+     * La página negativa se ajusta a 0 y el tamaño se limita al rango [1, TAMANO_PAGINA_MAXIMO].
+     */
+    public static Pageable construirPageableOrdenadoAsc(int pagina, int tamano, String campoOrden) {
+        return construirPageableOrdenado(pagina, tamano, campoOrden, Sort.Direction.ASC);
+    }
+
+    private static Pageable construirPageableOrdenado(int pagina, int tamano, String campoOrden, Sort.Direction direccion) {
         int paginaValida = Math.max(pagina, 0);
         int tamanoValido = Math.min(Math.max(tamano, 1), TAMANO_PAGINA_MAXIMO);
-        return PageRequest.of(paginaValida, tamanoValido, Sort.by(Sort.Direction.DESC, campoOrden));
+        return PageRequest.of(paginaValida, tamanoValido, Sort.by(direccion, campoOrden));
     }
 }

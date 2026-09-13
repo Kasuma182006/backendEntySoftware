@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.entysoftware.aplication.controller.controllerAdviceDto.ControllerAdviceDto;
-import com.entysoftware.aplication.error.BaseYaRegistrada;
+import com.entysoftware.aplication.error.DatosDuplicados;
 import com.entysoftware.aplication.error.EstablecimientoNoEncontradoException;
 import com.entysoftware.aplication.error.ObjetosNoEncontradosExepcion;
 import com.entysoftware.aplication.error.RangoFechasInvalidoException;
@@ -30,8 +30,8 @@ public class ControllerAdvice {
     private static final String ESTADO_PETICION_INVALIDA = "400";
     private static final String ERROR_PETICION_INVALIDA = "Bad Request";
 
-    @ExceptionHandler(BaseYaRegistrada.class)
-    public ResponseEntity<ControllerAdviceDto> handlerBaseYaRegistrada(BaseYaRegistrada except, HttpServletRequest request) {
+    @ExceptionHandler(DatosDuplicados.class)
+    public ResponseEntity<ControllerAdviceDto> handlerDatosDuplicados(DatosDuplicados except, HttpServletRequest request) {
         return construirRespuestaError(HttpStatus.CONFLICT, ESTADO_CONFLICTO, ERROR_CONFLICTO, except.getMessage(), request);
     }
 
