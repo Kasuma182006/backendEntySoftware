@@ -19,14 +19,11 @@ import lombok.NoArgsConstructor;
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(description = "Identificador de la categoría.", example = "2", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer id ;
 
-    @Schema(description = "Nombre de la categoría.", example = "Bebidas")
     private String nombre;
 
     @Column(name = "Fk_id_establecimiento")
-    @Schema(description = "Identificador del establecimiento al que pertenece la categoría.", example = "1")
     private int idEstablecimiento;
 
 }

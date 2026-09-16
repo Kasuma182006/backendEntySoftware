@@ -23,8 +23,8 @@ public class ControllerAdviceDto {
     @Schema(description = "Nombre corto del error HTTP asociado al código de estado.", example = "Not Found", requiredMode = Schema.RequiredMode.REQUIRED)
     private String error;
 
-    @Schema(description = "Mensaje descriptivo del motivo del error, orientado al consumidor de la API.", example = "No se ha encontrado el ID del establecimiento", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String mensaje;
+    @Schema(description = "Mensaje descriptivo del motivo del error, orientado al consumidor de la API. Es un único texto (String) para la mayoría de los errores, o una lista de textos (List<String>) cuando falla la validación de varios campos a la vez.", example = "No se ha encontrado el ID del establecimiento", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Object mensaje;
 
     @Schema(description = "Ruta (URI) del recurso que originó el error.", example = "/login", requiredMode = Schema.RequiredMode.REQUIRED)
     private String path;

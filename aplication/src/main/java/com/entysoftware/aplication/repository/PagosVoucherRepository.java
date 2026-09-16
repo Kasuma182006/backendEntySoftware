@@ -1,5 +1,6 @@
 package com.entysoftware.aplication.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
@@ -22,5 +23,13 @@ public interface PagosVoucherRepository extends JpaRepository<PagoVoucher, Integ
         @Param("desde") LocalDateTime desde,
         @Param("hasta") LocalDateTime hasta,
         Pageable pageable
+    );
+
+    @Query("SELECT COALESCE(SUM(v.valor), 0) FROM PagoVoucher v " +
+           "WHERE v.idEstablecimiento = :idEstablecimiento " +
+           "AND FUNCTION('DATE', v.fecha) = :fecha")
+    Integer sumarValorDelDia(
+        @Param("idEstablecimiento") Integer idEstablecimiento,
+        @Param("fecha") LocalDate fecha
     );
 }

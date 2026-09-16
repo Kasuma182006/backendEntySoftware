@@ -1,10 +1,13 @@
 package com.entysoftware.aplication.controller.controllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -55,7 +58,20 @@ public class ControllerAdvice {
         return construirRespuestaError(HttpStatus.BAD_REQUEST, ESTADO_PETICION_INVALIDA, ERROR_PETICION_INVALIDA, except.getMessage(), request);
     }
 
-    private ResponseEntity<ControllerAdviceDto> construirRespuestaError(@NonNull HttpStatus httpStatus, String status, String error, String mensaje, HttpServletRequest request) {
+    /**
+     * Captura los errores de validación (@Valid) de los DTOs de entrada. Como puede haber más
+     * de un campo inválido a la vez, el mensaje se devuelve como una lista de textos, uno por
+     * cada campo que falló su validación.
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ControllerAdviceDto> handlerMethodArgumentNotValidException(MethodArgumentNotValidException except, HttpServletRequest request) {
+        List<String> mensajes = except.getBindingResult().getFieldErrors().stream()
+            .map(FieldError::getDefaultMessage)
+            .toList();
+        return construirRespuestaError(HttpStatus.BAD_REQUEST, ESTADO_PETICION_INVALIDA, ERROR_PETICION_INVALIDA, mensajes, request);
+    }
+
+    private ResponseEntity<ControllerAdviceDto> construirRespuestaError(@NonNull HttpStatus httpStatus, String status, String error, Object mensaje, HttpServletRequest request) {
         String path = request.getRequestURI();
         ControllerAdviceDto excepcionDto = new ControllerAdviceDto(LocalDateTime.now(), status, error, mensaje, path);
         return ResponseEntity.status(httpStatus).body(excepcionDto);

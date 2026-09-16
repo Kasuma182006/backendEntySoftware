@@ -5,15 +5,11 @@ import org.springframework.stereotype.Service;
 
 import com.entysoftware.aplication.error.EstablecimientoNoEncontradoException;
 import com.entysoftware.aplication.error.UsuarioNoEncontradoException;
-import com.entysoftware.aplication.model.dto.MesasDto;
 import com.entysoftware.aplication.model.dto.loginDto.EstablecimientosDto;
 import com.entysoftware.aplication.model.dto.loginDto.LoginDto;
 import com.entysoftware.aplication.model.dto.loginDto.LoginSuccesfulDto;
-import com.entysoftware.aplication.model.models.Categoria;
 import com.entysoftware.aplication.model.models.Empleado;
 import com.entysoftware.aplication.model.models.Establecimiento;
-import com.entysoftware.aplication.model.models.Inventario;
-import com.entysoftware.aplication.model.models.Mesa;
 import com.entysoftware.aplication.model.models.Propietario;
 import com.entysoftware.aplication.repository.CategoriasRepository;
 import com.entysoftware.aplication.repository.EmpleadosRepository;
@@ -39,21 +35,12 @@ public class LoginServiceImp implements LoginInterface {
 
     private final PropietariosRepository propietariosRepository;
 
-    private final MesasRepository mesasRepository;
-
-    private final CategoriasRepository categoriasRepository;
-
-    private final InventarioRepository inventarioRepository;
-
     private final JwtService jwtService;
 
     public LoginServiceImp(EstablecimientoRepository establecimientoRepository, EmpleadosRepository empleadosRepository, PropietariosRepository propietariosRepository,MesasRepository mesasRepository, CategoriasRepository categoriasRepository,InventarioRepository inventarioRepository, JwtService jwtService){
         this.establecimientoRepository = establecimientoRepository;
         this.empleadosrepository = empleadosRepository;
         this.propietariosRepository = propietariosRepository;
-        this.mesasRepository = mesasRepository;
-        this.categoriasRepository = categoriasRepository;
-        this.inventarioRepository = inventarioRepository;
         this.jwtService = jwtService;
     }
 
@@ -66,6 +53,7 @@ public class LoginServiceImp implements LoginInterface {
             log.debug("Lista de establecimientos del propietario:{} ",establecimientosDelPropietarioDto);
             return ResponseEntity.ok().body(establecimientosDelPropietarioDto);
         }
+ 
 
         List<Empleado> listaEstablecimientoEmpleado = empleadosrepository.establecimientosEmpleados(identificacion);
         if(listaEstablecimientoEmpleado.isEmpty()) throw new UsuarioNoEncontradoException("No se han encontrado coincidencias");
@@ -94,39 +82,26 @@ public class LoginServiceImp implements LoginInterface {
 
         Establecimiento establecimientoSeleccionado = establecimientoRepository.findById(idEstablecimiento).orElseThrow(()-> new EstablecimientoNoEncontradoException("No se ha encontrado el ID del establecimiento"));
         Propietario propietario = propietariosRepository.loginPropietario(usuario.getIdentificacion(),usuario.getPassword());
-        List<Mesa> listaMesas = mesasRepository.findByFK_id_establecimiento(establecimientoSeleccionado.getIdEstablecimiento());
-        List<MesasDto> listaMesasDto = listaMesas.stream()
-                  .map(m -> new MesasDto(
-                                         m.getIdMesa(),
-                                         m.getIdEstablecimiento(),
-                                         m.getNombreMesa(),
-                                         m.getEstadoMesa()
-                                        ))
-                   .toList();
 
-        List<Categoria> listaCategorias = categoriasRepository.findByFk_id_establecimiento(establecimientoSeleccionado.getIdEstablecimiento());
-        List<Inventario> listaInventario = listaCategorias.stream()
-                                                           .flatMap(categoria -> inventarioRepository.findByFK_categoria(categoria.getId()).stream())
-                                                           .toList();
 
         if (propietario == null){
             Empleado empleado = empleadosrepository.loginEmpleado(idEstablecimiento,usuario.getIdentificacion(),usuario.getPassword());
             if(empleado == null)throw new UsuarioNoEncontradoException("No se han encontrado resultados");
 
             String token = jwtService.generarToken(empleado.getNumeroIdentificacion(),empleado.getRol());
-            LoginSuccesfulDto dtoLogin = construirRespuestaLogin(empleado.getNumeroIdentificacion(),empleado.getNombre(),empleado.getRol(),establecimientoSeleccionado,listaMesasDto,listaCategorias,listaInventario,token);
+            LoginSuccesfulDto dtoLogin = construirRespuestaLogin(empleado.getNumeroIdentificacion(),empleado.getNombre(),empleado.getRol(),establecimientoSeleccionado,token);
             log.debug("Login exitoso: {}",dtoLogin.getNombre());
             return ResponseEntity.ok(dtoLogin);
         }
 
         String token = jwtService.generarToken(propietario.getIdPropietario(),ROL_ADMINISTRADOR);
-        LoginSuccesfulDto dtoLogin = construirRespuestaLogin(propietario.getIdPropietario(),propietario.getNombre(),ROL_ADMINISTRADOR,establecimientoSeleccionado,listaMesasDto,listaCategorias,listaInventario,token);
+        LoginSuccesfulDto dtoLogin = construirRespuestaLogin(propietario.getIdPropietario(),propietario.getNombre(),ROL_ADMINISTRADOR,establecimientoSeleccionado,token);
         log.debug("Login exitoso: {}",dtoLogin.getNombre());
         return ResponseEntity.ok(dtoLogin);
     }
 
-    private LoginSuccesfulDto construirRespuestaLogin(String numeroIdentificacion, String nombre, String rol, Establecimiento establecimiento, List<MesasDto> listaMesas, List<Categoria> listaCategorias, List<Inventario> listaInventario, String token){
-        return new LoginSuccesfulDto(numeroIdentificacion,nombre,rol,establecimiento.getIdEstablecimiento(),establecimiento.getEstadoEstablecimiento(),establecimiento.getNombreEstablecimiento(),listaMesas,listaCategorias,listaInventario,token);
+    private LoginSuccesfulDto construirRespuestaLogin(String numeroIdentificacion, String nombre, String rol, Establecimiento establecimiento, String token){
+        return new LoginSuccesfulDto(numeroIdentificacion,nombre,rol,establecimiento.getIdEstablecimiento(),establecimiento.getNombreEstablecimiento(),token);
     }
 
 }

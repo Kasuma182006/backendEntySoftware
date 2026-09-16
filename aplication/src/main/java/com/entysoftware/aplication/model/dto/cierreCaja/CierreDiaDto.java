@@ -21,17 +21,11 @@ public class CierreDiaDto {
     @Schema(description = "Base inicial (apertura de caja) registrada para el día.", example = "50000", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer baseInicialDelDia;
 
-    @Schema(description = "Ganancia total del día (efectivo + transferencia + base inicial) sin restar costos.", example = "820000", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Integer cantidadGananciaTotalDelDiaSinRestarCostos;
-
     @Schema(description = "Total de costos/gastos pagados en efectivo durante el día.", example = "60000", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer cantidadCostosEnEfectivo;
 
     @Schema(description = "Total de costos/gastos pagados por transferencia durante el día.", example = "20000", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer cantidadCostosEnTrasferencia;
-
-    @Schema(description = "Suma total de todos los costos/gastos del día.", example = "80000", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Integer cantidadCostosTotalesDelDia;
 
     @Schema(description = "Ingresos netos en efectivo del día, luego de restar los costos pagados en efectivo.", example = "260000", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer cantidadIngresosTotalesEnEfectivoNeta;
@@ -39,8 +33,9 @@ public class CierreDiaDto {
     @Schema(description = "Ingresos netos por transferencia del día, luego de restar los costos pagados por transferencia.", example = "430000", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer cantidadIngresosEnTrasferenciaNeta;
 
-    @Schema(description = "Ganancia neta total del día, luego de restar todos los costos.", example = "740000", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Integer cantidadGananciaNetaDelDia;
+    @Schema(description = "Ingresos netos por tarjeta", example = "30000",requiredMode = Schema.RequiredMode.REQUIRED)
+    private Integer cantidadIngresosEnTarjeta;
+
 
 }
 

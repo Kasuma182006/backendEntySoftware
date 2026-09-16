@@ -25,6 +25,12 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+		<!-- Validación de DTOs de entrada (Bean Validation / Jakarta Validation) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
 		<!-- Base de Datos (JPA y MySQL) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
