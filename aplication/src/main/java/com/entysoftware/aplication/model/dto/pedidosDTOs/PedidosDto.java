@@ -22,7 +22,7 @@ public class PedidosDto {
     @Schema(description = "Identificador de la mesa a la que pertenece el pedido.", example = "3", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer idMesa;
 
-    @Schema(description = "Método de pago del pedido. Se establece al pagar el pedido; se ignora al crearlo.", example = "EFECTIVO", allowableValues = {"EFECTIVO", "TRANSFERENCIA"})
+    @Schema(description = "Método de pago del pedido. Se establece al pagar el pedido; se ignora al crearlo.", example = "EFECTIVO", allowableValues = {"EFECTIVO", "TRANSFERENCIA","TARJETA"})
     private String tipoPago;
 
     @Schema(description = "Estado actual del pedido. Gestionado por el sistema; se ignora al crearlo.", example = "EN ESPERA", allowableValues = {"EN ESPERA", "PAGO"})

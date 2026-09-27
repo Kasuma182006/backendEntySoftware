@@ -7,15 +7,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.entysoftware.aplication.error.RangoFechasInvalidoException;
 import com.entysoftware.aplication.mapper.MapperPedidosDto;
+import com.entysoftware.aplication.model.dto.PaginaDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.FacturaPedidoDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.AdicionPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.DetallesPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.PedidosDto;
+import com.entysoftware.aplication.model.dto.pedidosDTOs.ResumenPedidosDto;
 import com.entysoftware.aplication.model.models.CuerpoPedido;
 import com.entysoftware.aplication.model.models.CuerpoPedidosAdiciones;
 import com.entysoftware.aplication.model.models.EncabezadoPedido;
@@ -25,6 +30,8 @@ import com.entysoftware.aplication.repository.EncabezadoPedidosRepository;
 import com.entysoftware.aplication.repository.InventarioRepository;
 import com.entysoftware.aplication.repository.MesasRepository;
 import com.entysoftware.aplication.service.interfaces.PedidosInterface;
+import com.entysoftware.aplication.utils.ConsultaPaginadaUtils;
+import com.entysoftware.aplication.utils.RangoFechas;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -35,9 +42,12 @@ import lombok.extern.slf4j.Slf4j;
 public class PedidoServiceImp implements PedidosInterface {
 
     private static final String TIPO_PAGO_EFECTIVO = "EFECTIVO";
+    private static final String TIPO_PAGO_TRANSFERENCIA = "TRANSFERENCIA";
+    private static final String TIPO_PAGO_TARJETA = "TARJETA";
     private static final String ESTADO_PEDIDO_EN_ESPERA = "EN ESPERA";
     private static final String ESTADO_PEDIDO_PAGADO = "PAGO";
     private static final String FORMATO_FECHA_HORA_FACTURA = "yyyy-MM-dd HH:mm";
+    private static final String CAMPO_ORDEN = "fechaPedido";
 
     private final EncabezadoPedidosRepository encabezadoPedidosRepository;
 
@@ -110,6 +120,44 @@ public class PedidoServiceImp implements PedidosInterface {
                                                   .toList();
 
         return ResponseEntity.ok(listaPedidosDto);
+    }
+
+    /**
+     * Lista paginada de pedidos de un establecimiento (a través de la mesa), del más reciente al más antiguo,
+     * junto con el resumen financiero (total, promedio y sumas por tipo de pago) de todos los pedidos que
+     * cumplen el filtro, independientemente de la página consultada.
+     * Con solo fechaInicio se filtra ese día; con ambas fechas se filtra el rango (inclusivo).
+     */
+    @Transactional
+    public ResponseEntity<ResumenPedidosDto> listarPedidos(Integer idEstablecimiento, LocalDate fechaInicio,
+            LocalDate fechaFin, int pagina, int tamano) {
+        Pageable pageable = ConsultaPaginadaUtils.construirPageableOrdenadoDesc(pagina, tamano, CAMPO_ORDEN);
+
+        RangoFechas rango = RangoFechas.resolver(fechaInicio, fechaFin)
+            .orElseThrow(() -> new RangoFechasInvalidoException("Debe indicar al menos la fecha de inicio"));
+        LocalDate desde = rango.desde().toLocalDate();
+        LocalDate hasta = rango.hasta().toLocalDate();
+
+        Page<EncabezadoPedido> paginaPedidos = encabezadoPedidosRepository.buscarPorEstablecimientoYRangoFechas(
+            idEstablecimiento, desde, hasta, pageable);
+        PaginaDto<PedidosDto> paginaDto = PaginaDto.desdePage(paginaPedidos.map(this::convertirAPedidoDto));
+
+        return ResponseEntity.ok(construirResumen(idEstablecimiento, desde, hasta, paginaDto));
+    }
+
+    private ResumenPedidosDto construirResumen(Integer idEstablecimiento, LocalDate desde, LocalDate hasta,
+            PaginaDto<PedidosDto> paginaDto) {
+        Integer total = encabezadoPedidosRepository.sumarPrecioTotalRangoFechas(idEstablecimiento, desde, hasta);
+        Long cantidad = encabezadoPedidosRepository.contarPedidosRangoFechas(idEstablecimiento, desde, hasta);
+        Integer efectivo = encabezadoPedidosRepository.sumarPrecioTotalPorTipoPagoRangoFechas(
+            idEstablecimiento, desde, hasta, TIPO_PAGO_EFECTIVO);
+        Integer transferencia = encabezadoPedidosRepository.sumarPrecioTotalPorTipoPagoRangoFechas(
+            idEstablecimiento, desde, hasta, TIPO_PAGO_TRANSFERENCIA);
+        Integer tarjeta = encabezadoPedidosRepository.sumarPrecioTotalPorTipoPagoRangoFechas(
+            idEstablecimiento, desde, hasta, TIPO_PAGO_TARJETA);
+        Integer promedio = cantidad > 0 ? (int) (total / cantidad) : 0;
+
+        return new ResumenPedidosDto(paginaDto, total, promedio, efectivo, tarjeta, transferencia);
     }
 
     private PedidosDto convertirAPedidoDto(EncabezadoPedido encabezadoPedido) {
@@ -247,7 +295,7 @@ public class PedidoServiceImp implements PedidosInterface {
 
         int calcularCambio = pago.getPagoPedido() - pedido.getPrecioTotal();
         pedido.setEstadoPedido(ESTADO_PEDIDO_PAGADO);
-        pedido.setTipoPago(pago.getTipoPago());
+        pedido.setTipoPago(pago.getTipoPago().toUpperCase());
         encabezadoPedidosRepository.save(pedido);
 
         DateTimeFormatter formato = DateTimeFormatter.ofPattern(FORMATO_FECHA_HORA_FACTURA);

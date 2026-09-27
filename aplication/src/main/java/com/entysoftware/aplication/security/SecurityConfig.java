@@ -34,6 +34,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/buscar-establecimiento/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        // Listado histórico de pedidos: solo administrador
+                        .requestMatchers(HttpMethod.GET, "/pedidos/listar-pedidos/**").hasRole(ROL_ADMINISTRADOR)
                         // Tareas de mesero: administrador y asistente pueden gestionar pedidos y consultar mesas
                         .requestMatchers("/pedidos/**").hasAnyRole(ROL_ADMINISTRADOR, ROL_ASISTENTE)
                         .requestMatchers(HttpMethod.GET, "/mesas/listar-mesas/**").hasAnyRole(ROL_ADMINISTRADOR, ROL_ASISTENTE)

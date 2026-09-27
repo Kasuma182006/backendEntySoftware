@@ -1,5 +1,6 @@
 package com.entysoftware.aplication.controller.controllers;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -7,16 +8,19 @@ import com.entysoftware.aplication.controller.controllerAdviceDto.ControllerAdvi
 import com.entysoftware.aplication.model.dto.pagosDTOs.FacturaPedidoDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.PedidosDto;
+import com.entysoftware.aplication.model.dto.pedidosDTOs.ResumenPedidosDto;
 import com.entysoftware.aplication.service.interfaces.PedidosInterface;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 
@@ -99,5 +104,30 @@ public class PedidosController {
         return pedidosInterface.pagoPedido(pagoPedido);
     }
 
+    @Operation(
+        summary = "Listar pedidos de un establecimiento (paginado y filtrado por fecha)",
+        description = "Devuelve una página de pedidos del establecimiento indicado (a través de sus mesas), del más reciente al más antiguo, incluyendo el detalle de productos de cada pedido, junto con el resumen financiero (total, promedio y sumas por tipo de pago: efectivo, tarjeta y transferencia) de todos los pedidos que cumplen el filtro, sin importar la página consultada. "
+            + "Filtro de fecha: es obligatorio enviar al menos 'fechaInicio'; enviando solo esa fecha se filtra únicamente ese día; enviando también 'fechaFin' se filtra el rango entre ambas fechas (inclusivo). "
+            + "El tamaño de página máximo es 100. Exclusivo del rol ADMINISTRADOR."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Página de pedidos y resumen financiero obtenidos correctamente (el contenido puede estar vacío)."),
+        @ApiResponse(responseCode = "400", description = "Falta la fecha de inicio, el rango de fechas es inválido, o algún parámetro está mal formado.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class), examples = @ExampleObject(value = "{\"time\":\"2026-09-26T14:32:05.123\",\"status\":\"400\",\"error\":\"Bad Request\",\"mensaje\":\"La fecha de inicio 2026-09-12 no puede ser posterior a la fecha fin 2026-09-01\",\"path\":\"/pedidos/listar-pedidos/1\"}"))),
+        @ApiResponse(responseCode = "500", description = "Error interno inesperado al consultar los pedidos.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class)))
+    })
+    @GetMapping("/listar-pedidos/{idEstablecimiento}")
+    public ResponseEntity<ResumenPedidosDto> listarPedidos(
+        @Parameter(description = "Identificador del establecimiento cuyos pedidos se desean listar.", example = "1", required = true)
+        @PathVariable("idEstablecimiento") Integer idEstablecimiento,
+        @Parameter(description = "Fecha a consultar, o inicio del rango si se envía 'fechaFin' (formato yyyy-MM-dd). Obligatoria.", example = "2026-09-01", required = true)
+        @RequestParam(name = "fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+        @Parameter(description = "Fin del rango, inclusivo (formato yyyy-MM-dd). Opcional: sin ella se filtra únicamente 'fechaInicio'.", example = "2026-09-12")
+        @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+        @Parameter(description = "Número de página a consultar (inicia en 0).", example = "0")
+        @RequestParam(name = "pagina", defaultValue = "0") int pagina,
+        @Parameter(description = "Cantidad de elementos por página (máximo 100).", example = "10")
+        @RequestParam(name = "tamano", defaultValue = "10") int tamano) {
+        return pedidosInterface.listarPedidos(idEstablecimiento, fechaInicio, fechaFin, pagina, tamano);
+    }
 
 }
