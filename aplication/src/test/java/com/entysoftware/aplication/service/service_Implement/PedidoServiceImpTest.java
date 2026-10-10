@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,10 +24,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.entysoftware.aplication.mapper.MapperPedidosDto;
+import com.entysoftware.aplication.model.dto.PaginaDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.FacturaPedidoDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
 import com.entysoftware.aplication.model.enums.TipoPago;
@@ -213,6 +217,73 @@ class PedidoServiceImpTest {
             assertNotNull(response.getBody());
             assertTrue(response.getBody().isEmpty());
             verify(mapperPedidosDto, never()).pedidosToEntity(any());
+        }
+    }
+
+    @Nested
+    class ListarPedidosEnEsperaTests {
+
+        @Test
+        void givenPedidosEnEspera_whenListarPedidosEnEspera_thenConsultaHoyEnEsperaOrdenadoAscYMapeaDetalles() {
+            // Arrange
+            Mesa mesa = crearMesa(3);
+            Inventario producto = new Inventario(100, "Papas", 1, "desc", 5000);
+            EncabezadoPedido encabezado = new EncabezadoPedido(1, mesa, "EFECTIVO", "EN ESPERA", 0, 15000, LocalDate.now(), "desc", new ArrayList<>());
+            CuerpoPedido cuerpo = new CuerpoPedido(7, encabezado, producto, 3);
+            encabezado.setDetalles(List.of(cuerpo));
+
+            when(encabezadoPedidosRepository.buscarPorEstablecimientoEstadoYFecha(eq(1), eq("EN ESPERA"), eq(LocalDate.now()), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(encabezado)));
+            when(mapperPedidosDto.pedidosToEntity(encabezado))
+                .thenReturn(new PedidosDto(1, 3, "EFECTIVO", "EN ESPERA", 0, 15000, LocalDate.now(), "desc", null));
+
+            // Act
+            ResponseEntity<PaginaDto<PedidosDto>> response = pedidoServiceImp.listarPedidosEnEspera(1, 0, 10);
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            PaginaDto<PedidosDto> body = response.getBody();
+            assertNotNull(body);
+            assertEquals(1, body.getContenido().size());
+            assertEquals(100, body.getContenido().get(0).getPedido().get(0).getIdProducto());
+
+            ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+            verify(encabezadoPedidosRepository, times(1))
+                .buscarPorEstablecimientoEstadoYFecha(eq(1), eq("EN ESPERA"), eq(LocalDate.now()), captor.capture());
+            assertEquals(0, captor.getValue().getPageNumber());
+            assertEquals(10, captor.getValue().getPageSize());
+            assertEquals("ASC", captor.getValue().getSort().getOrderFor("idPedido").getDirection().name());
+        }
+
+        @Test
+        void givenSinPedidosEnEspera_whenListarPedidosEnEspera_thenRetornaPaginaVacia() {
+            // Arrange
+            when(encabezadoPedidosRepository.buscarPorEstablecimientoEstadoYFecha(any(), any(), any(), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of()));
+
+            // Act
+            ResponseEntity<PaginaDto<PedidosDto>> response = pedidoServiceImp.listarPedidosEnEspera(2, 0, 10);
+
+            // Assert
+            assertNotNull(response.getBody());
+            assertTrue(response.getBody().getContenido().isEmpty());
+            verify(mapperPedidosDto, never()).pedidosToEntity(any());
+        }
+
+        @Test
+        void givenTamanoExcesivo_whenListarPedidosEnEspera_thenLimitaTamanoAlMaximo() {
+            // Arrange
+            when(encabezadoPedidosRepository.buscarPorEstablecimientoEstadoYFecha(any(), any(), any(), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of()));
+
+            // Act
+            pedidoServiceImp.listarPedidosEnEspera(1, -5, 5000);
+
+            // Assert
+            ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+            verify(encabezadoPedidosRepository).buscarPorEstablecimientoEstadoYFecha(any(), any(), any(), captor.capture());
+            assertEquals(0, captor.getValue().getPageNumber());
+            assertEquals(100, captor.getValue().getPageSize());
         }
     }
 

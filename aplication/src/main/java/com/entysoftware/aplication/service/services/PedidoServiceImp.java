@@ -48,6 +48,7 @@ public class PedidoServiceImp implements PedidosInterface {
     private static final String ESTADO_PEDIDO_PAGADO = "PAGO";
     private static final String FORMATO_FECHA_HORA_FACTURA = "yyyy-MM-dd HH:mm";
     private static final String CAMPO_ORDEN = "fechaPedido";
+    private static final String CAMPO_ORDEN_ID_PEDIDO = "idPedido";
 
     private final EncabezadoPedidosRepository encabezadoPedidosRepository;
 
@@ -143,6 +144,20 @@ public class PedidoServiceImp implements PedidosInterface {
         PaginaDto<PedidosDto> paginaDto = PaginaDto.desdePage(paginaPedidos.map(this::convertirAPedidoDto));
 
         return ResponseEntity.ok(construirResumen(idEstablecimiento, desde, hasta, paginaDto));
+    }
+
+    /**
+     * Lista paginada de los pedidos en estado "EN ESPERA" del día actual para un establecimiento.
+     * La fecha la define el backend. Se ordena del más antiguo al más reciente (orden de llegada).
+     */
+    @Transactional
+    public ResponseEntity<PaginaDto<PedidosDto>> listarPedidosEnEspera(Integer idEstablecimiento, int pagina, int tamano) {
+        Pageable pageable = ConsultaPaginadaUtils.construirPageableOrdenadoAsc(pagina, tamano, CAMPO_ORDEN_ID_PEDIDO);
+
+        Page<EncabezadoPedido> paginaPedidos = encabezadoPedidosRepository.buscarPorEstablecimientoEstadoYFecha(
+            idEstablecimiento, ESTADO_PEDIDO_EN_ESPERA, LocalDate.now(), pageable);
+
+        return ResponseEntity.ok(PaginaDto.desdePage(paginaPedidos.map(this::convertirAPedidoDto)));
     }
 
     private ResumenPedidosDto construirResumen(Integer idEstablecimiento, LocalDate desde, LocalDate hasta,

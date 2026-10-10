@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.entysoftware.aplication.controller.controllerAdviceDto.ControllerAdviceDto;
+import com.entysoftware.aplication.model.dto.PaginaDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.FacturaPedidoDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.PedidosDto;
@@ -128,6 +129,26 @@ public class PedidosController {
         @Parameter(description = "Cantidad de elementos por página (máximo 100).", example = "10")
         @RequestParam(name = "tamano", defaultValue = "10") int tamano) {
         return pedidosInterface.listarPedidos(idEstablecimiento, fechaInicio, fechaFin, pagina, tamano);
+    }
+
+    @Operation(
+        summary = "Listar pedidos en espera del día (paginado)",
+        description = "Devuelve una página con los pedidos del establecimiento indicado que se encuentran en estado 'EN ESPERA' en la fecha actual, incluyendo el detalle de productos de cada pedido, del más antiguo al más reciente. No admite filtros: la fecha la define el backend. El tamaño de página máximo es 100."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Página de pedidos en espera obtenida correctamente (el contenido puede estar vacío)."),
+        @ApiResponse(responseCode = "400", description = "Algún parámetro está mal formado.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class))),
+        @ApiResponse(responseCode = "500", description = "Error interno inesperado al consultar los pedidos en espera.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class)))
+    })
+    @GetMapping("/listar-pedidos-en-espera/{idEstablecimiento}")
+    public ResponseEntity<PaginaDto<PedidosDto>> listarPedidosEnEspera(
+        @Parameter(description = "Identificador del establecimiento cuyos pedidos en espera se desean listar.", example = "1", required = true)
+        @PathVariable("idEstablecimiento") Integer idEstablecimiento,
+        @Parameter(description = "Número de página a consultar (inicia en 0).", example = "0")
+        @RequestParam(name = "pagina", defaultValue = "0") int pagina,
+        @Parameter(description = "Cantidad de elementos por página (máximo 100).", example = "10")
+        @RequestParam(name = "tamano", defaultValue = "10") int tamano) {
+        return pedidosInterface.listarPedidosEnEspera(idEstablecimiento, pagina, tamano);
     }
 
 }

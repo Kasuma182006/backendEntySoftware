@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
+import com.entysoftware.aplication.model.dto.PaginaDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.FacturaPedidoDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.PedidosDto;
@@ -23,5 +24,7 @@ public interface PedidosInterface {
 
     public ResponseEntity<ResumenPedidosDto> listarPedidos(Integer idEstablecimiento, LocalDate fechaInicio,
             LocalDate fechaFin, int pagina, int tamano);
+
+    public ResponseEntity<PaginaDto<PedidosDto>> listarPedidosEnEspera(Integer idEstablecimiento, int pagina, int tamano);
 
 }

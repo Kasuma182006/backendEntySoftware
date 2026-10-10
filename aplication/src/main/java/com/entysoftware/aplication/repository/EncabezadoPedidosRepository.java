@@ -100,4 +100,14 @@ public interface EncabezadoPedidosRepository  extends JpaRepository<EncabezadoPe
         @Param("idEstablecimiento") Integer idEstablecimiento,
         @Param("fecha") LocalDate fecha
     );
+
+    @Query("SELECT e FROM EncabezadoPedido e " +
+       "WHERE e.idMesa.idEstablecimiento = :idEstablecimiento " +
+       "AND e.estadoPedido = :estadoPedido AND e.fechaPedido = :fecha")
+    Page<EncabezadoPedido> buscarPorEstablecimientoEstadoYFecha(
+        @Param("idEstablecimiento") Integer idEstablecimiento,
+        @Param("estadoPedido") String estadoPedido,
+        @Param("fecha") LocalDate fecha,
+        Pageable pageable
+    );
 }
