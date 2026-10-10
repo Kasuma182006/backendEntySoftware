@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.validation.FieldError;
@@ -69,6 +70,17 @@ public class ControllerAdvice {
             .map(FieldError::getDefaultMessage)
             .toList();
         return construirRespuestaError(HttpStatus.BAD_REQUEST, ESTADO_PETICION_INVALIDA, ERROR_PETICION_INVALIDA, mensajes, request);
+    }
+
+    /**
+     * Captura los cuerpos de petición ilegibles: JSON mal formado o valores no permitidos en un enum
+     * (por ejemplo, un tipoPago distinto de EFECTIVO, TRANSFERENCIA o TARJETA).
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ControllerAdviceDto> handlerHttpMessageNotReadableException(HttpMessageNotReadableException except, HttpServletRequest request) {
+        Throwable causa = except.getMostSpecificCause();
+        String mensaje = causa instanceof IllegalArgumentException ? causa.getMessage() : "El cuerpo de la petición es inválido o está mal formado";
+        return construirRespuestaError(HttpStatus.BAD_REQUEST, ESTADO_PETICION_INVALIDA, ERROR_PETICION_INVALIDA, mensaje, request);
     }
 
     private ResponseEntity<ControllerAdviceDto> construirRespuestaError(@NonNull HttpStatus httpStatus, String status, String error, Object mensaje, HttpServletRequest request) {

@@ -295,7 +295,7 @@ public class PedidoServiceImp implements PedidosInterface {
 
         int calcularCambio = pago.getPagoPedido() - pedido.getPrecioTotal();
         pedido.setEstadoPedido(ESTADO_PEDIDO_PAGADO);
-        pedido.setTipoPago(pago.getTipoPago().toUpperCase());
+        pedido.setTipoPago(pago.getTipoPago().name().toUpperCase());
         encabezadoPedidosRepository.save(pedido);
 
         DateTimeFormatter formato = DateTimeFormatter.ofPattern(FORMATO_FECHA_HORA_FACTURA);

@@ -27,7 +27,7 @@ public class FacturaPedidoDto {
     @Schema(description = "Cambio (vueltas) a devolver al cliente, resultado de restar el valor total al valor pagado.", example = "2000", requiredMode = Schema.RequiredMode.REQUIRED)
     private int valorCambio;
 
-    @Schema(description = "Método de pago utilizado.", example = "EFECTIVO", allowableValues = {"EFECTIVO", "TRANSFERENCIA"}, requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Método de pago utilizado.", example = "EFECTIVO", allowableValues = {"EFECTIVO", "TRANSFERENCIA", "TARJETA"}, requiredMode = Schema.RequiredMode.REQUIRED)
     private String tipoPago;
 
     @Schema(description = "Fecha y hora en que se generó la factura, en formato 'yyyy-MM-dd HH:mm'.", example = "2026-08-10 14:32", requiredMode = Schema.RequiredMode.REQUIRED)

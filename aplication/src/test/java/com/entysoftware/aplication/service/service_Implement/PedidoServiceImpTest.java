@@ -29,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import com.entysoftware.aplication.mapper.MapperPedidosDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.FacturaPedidoDto;
 import com.entysoftware.aplication.model.dto.pagosDTOs.PagarPedidoDto;
+import com.entysoftware.aplication.model.enums.TipoPago;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.AdicionPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.DetallesPedidoDto;
 import com.entysoftware.aplication.model.dto.pedidosDTOs.PedidosDto;
@@ -316,7 +317,7 @@ class PedidoServiceImpTest {
         @Test
         void givenPedidoExistente_whenPagoPedido_thenActualizaEstadoYRetornaFactura() {
             // Arrange
-            PagarPedidoDto pago = new PagarPedidoDto(1, 20000, "EFECTIVO");
+            PagarPedidoDto pago = new PagarPedidoDto(1, 20000, TipoPago.EFECTIVO);
             EncabezadoPedido pedidoExistente = new EncabezadoPedido(1, crearMesa(3), "EFECTIVO", "EN ESPERA", 0, 15000, LocalDate.now(), "desc", new ArrayList<>());
             when(encabezadoPedidosRepository.findById(1)).thenReturn(Optional.of(pedidoExistente));
 
@@ -343,7 +344,7 @@ class PedidoServiceImpTest {
         @Test
         void givenPedidoInexistente_whenPagoPedido_thenLanzaNoSuchElementException() {
             // Arrange
-            PagarPedidoDto pago = new PagarPedidoDto(99, 10000, "EFECTIVO");
+            PagarPedidoDto pago = new PagarPedidoDto(99, 10000, TipoPago.EFECTIVO);
             when(encabezadoPedidosRepository.findById(99)).thenReturn(Optional.empty());
 
             // Act & Assert

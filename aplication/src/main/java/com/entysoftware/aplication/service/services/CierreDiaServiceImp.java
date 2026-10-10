@@ -11,7 +11,6 @@ import com.entysoftware.aplication.repository.BaseInicialRepository;
 import com.entysoftware.aplication.repository.CostosRepository;
 import com.entysoftware.aplication.repository.EncabezadoPedidosRepository;
 import com.entysoftware.aplication.repository.EstablecimientoRepository;
-import com.entysoftware.aplication.repository.PagosVoucherRepository;
 import com.entysoftware.aplication.service.interfaces.CierreDiaInterface;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,14 +23,12 @@ public class CierreDiaServiceImp implements CierreDiaInterface {
     private final CostosRepository costosRepository;
     private final BaseInicialRepository baseInicialRepository;
     private final EstablecimientoRepository establecimientoRepository;
-    private final PagosVoucherRepository pagosVoucherRepository;
 
-    public CierreDiaServiceImp(PagosVoucherRepository pagosVoucherRepository,EstablecimientoRepository establecimientoRepository,BaseInicialRepository baseInicialRepository,EncabezadoPedidosRepository encabezadoPedidosRepository,CostosRepository costosRepository){
+    public CierreDiaServiceImp(EstablecimientoRepository establecimientoRepository,BaseInicialRepository baseInicialRepository,EncabezadoPedidosRepository encabezadoPedidosRepository,CostosRepository costosRepository){
         this.encabezadoPedidosRepository = encabezadoPedidosRepository;
         this.costosRepository = costosRepository;
         this.baseInicialRepository = baseInicialRepository;
         this.establecimientoRepository = establecimientoRepository;
-        this.pagosVoucherRepository = pagosVoucherRepository;
     }
 
     public ResponseEntity<CierreDiaDto> cierreDia(Integer idEstablecimiento){
@@ -74,7 +71,7 @@ public class CierreDiaServiceImp implements CierreDiaInterface {
                                  costos.costosTotalesTrasferencia,
                                  ventasEnEfectivoNeta,
                                  ventasEnTrasferenciaNeta,
-                                 pagosVoucherRepository.sumarValorDelDia(idEstablecimiento, fechaHoy)
+                                 encabezadoPedidosRepository.sumarIngresosTarjetaDelDia(idEstablecimiento, fechaHoy)
                                 );
     }
 

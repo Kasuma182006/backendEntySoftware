@@ -15,7 +15,7 @@ public interface EncabezadoPedidosRepository  extends JpaRepository<EncabezadoPe
 
     @Query("SELECT e FROM EncabezadoPedido e " +
        "WHERE e.idMesa.idEstablecimiento = :idEstablecimiento " +
-       "AND e.fechaPedido >= :desde AND e.fechaPedido < :hasta")
+       "AND e.estadoPedido = 'PAGO' AND e.fechaPedido >= :desde AND e.fechaPedido < :hasta")
     Page<EncabezadoPedido> buscarPorEstablecimientoYRangoFechas(
         @Param("idEstablecimiento") Integer idEstablecimiento,
         @Param("desde") LocalDate desde,
@@ -25,7 +25,7 @@ public interface EncabezadoPedidosRepository  extends JpaRepository<EncabezadoPe
 
     @Query("SELECT COALESCE(SUM(e.precioTotal), 0) FROM EncabezadoPedido e " +
        "WHERE e.idMesa.idEstablecimiento = :idEstablecimiento " +
-       "AND e.fechaPedido >= :desde AND e.fechaPedido < :hasta")
+       "AND e.estadoPedido = 'PAGO' AND e.fechaPedido >= :desde AND e.fechaPedido < :hasta")
     Integer sumarPrecioTotalRangoFechas(
         @Param("idEstablecimiento") Integer idEstablecimiento,
         @Param("desde") LocalDate desde,
@@ -34,7 +34,7 @@ public interface EncabezadoPedidosRepository  extends JpaRepository<EncabezadoPe
 
     @Query("SELECT COUNT(e) FROM EncabezadoPedido e " +
        "WHERE e.idMesa.idEstablecimiento = :idEstablecimiento " +
-       "AND e.fechaPedido >= :desde AND e.fechaPedido < :hasta")
+       "AND e.estadoPedido = 'PAGO' AND e.fechaPedido >= :desde AND e.fechaPedido < :hasta")
     Long contarPedidosRangoFechas(
         @Param("idEstablecimiento") Integer idEstablecimiento,
         @Param("desde") LocalDate desde,
@@ -43,7 +43,7 @@ public interface EncabezadoPedidosRepository  extends JpaRepository<EncabezadoPe
 
     @Query("SELECT COALESCE(SUM(e.precioTotal), 0) FROM EncabezadoPedido e " +
        "WHERE e.idMesa.idEstablecimiento = :idEstablecimiento " +
-       "AND e.fechaPedido >= :desde AND e.fechaPedido < :hasta AND e.tipoPago = :tipoPago")
+       "AND e.estadoPedido = 'PAGO' AND e.fechaPedido >= :desde AND e.fechaPedido < :hasta AND e.tipoPago = :tipoPago")
     Integer sumarPrecioTotalPorTipoPagoRangoFechas(
         @Param("idEstablecimiento") Integer idEstablecimiento,
         @Param("desde") LocalDate desde,
@@ -70,7 +70,7 @@ public interface EncabezadoPedidosRepository  extends JpaRepository<EncabezadoPe
 
     @Query("SELECT COALESCE(SUM(u.precioTotal), 0)  - COALESCE(SUM(u.valorDomicilio),0) FROM EncabezadoPedido u " +
        "WHERE u.idMesa.idEstablecimiento = :idEstablecimiento " +
-       "AND u.fechaPedido = :fecha AND u.tipoPago = 'TRANSFERENCIA'")
+       "AND u.fechaPedido = :fecha AND u.estadoPedido = 'PAGO' AND u.tipoPago = 'TRANSFERENCIA'")
     Integer sumarIngresosTransferenciaDelDia(
         @Param("idEstablecimiento") Integer idEstablecimiento,
         @Param("fecha") LocalDate fecha
@@ -87,8 +87,16 @@ public interface EncabezadoPedidosRepository  extends JpaRepository<EncabezadoPe
 
     @Query("SELECT COALESCE(SUM(u.precioTotal), 0) - COALESCE(SUM(u.valorDomicilio),0) FROM EncabezadoPedido u " +
        "WHERE u.idMesa.idEstablecimiento = :idEstablecimiento " +
-       "AND u.fechaPedido = :fecha AND u.tipoPago = 'EFECTIVO'")
+       "AND u.fechaPedido = :fecha AND u.estadoPedido = 'PAGO' AND u.tipoPago = 'EFECTIVO'")
     Integer sumarIngresosEfectivoDelDia(
+        @Param("idEstablecimiento") Integer idEstablecimiento,
+        @Param("fecha") LocalDate fecha
+    );
+
+    @Query("SELECT COALESCE(SUM(u.precioTotal), 0) - COALESCE(SUM(u.valorDomicilio),0) FROM EncabezadoPedido u " +
+       "WHERE u.idMesa.idEstablecimiento = :idEstablecimiento " +
+       "AND u.fechaPedido = :fecha AND u.estadoPedido = 'PAGO' AND u.tipoPago = 'TARJETA'")
+    Integer sumarIngresosTarjetaDelDia(
         @Param("idEstablecimiento") Integer idEstablecimiento,
         @Param("fecha") LocalDate fecha
     );
