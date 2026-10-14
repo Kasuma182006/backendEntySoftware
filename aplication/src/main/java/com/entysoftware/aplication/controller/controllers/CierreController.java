@@ -47,7 +47,7 @@ public class CierreController {
 
     @Operation(
         summary = "Obtener el cierre de caja del día",
-        description = "Calcula y devuelve el resumen de cierre de caja del día actual para el establecimiento indicado: pedidos realizados, ingresos, costos y ganancias netas."
+        description = "Calcula y devuelve el resumen de cierre de caja del día actual para el establecimiento indicado: pedidos realizados, ingresos, costos y ganancias netas. Es solo de consulta: no cambia el estado del establecimiento (el cierre lo hace el cuadre de caja)."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Cierre de caja calculado correctamente."),
@@ -62,7 +62,7 @@ public class CierreController {
 
     @Operation(
         summary = "Registrar el cuadre de caja",
-        description = "Guarda el cuadre de caja del establecimiento indicado en el cuerpo de la petición, con las cantidades contadas en transferencia, efectivo y tarjeta. La fecha la asigna el backend automáticamente."
+        description = "Guarda el cuadre de caja del establecimiento indicado en el cuerpo de la petición, con las cantidades contadas en transferencia, efectivo y tarjeta, y cambia el estado del establecimiento a CERRADO. La fecha la asigna el backend automáticamente."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Cuadre de caja registrado correctamente."),

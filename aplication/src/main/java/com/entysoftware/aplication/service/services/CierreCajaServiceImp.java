@@ -27,6 +27,7 @@ import jakarta.transaction.Transactional;
 public class CierreCajaServiceImp implements CierreCajaInterface {
 
     private static final String CAMPO_ORDEN = "fecha";
+    private static final String ESTADO_ESTABLECIMIENTO_CERRADO = "CERRADO";
 
     private final CierreCajaRepository cierreCajaRepository;
 
@@ -54,6 +55,7 @@ public class CierreCajaServiceImp implements CierreCajaInterface {
 
         CierreCaja cierreCaja = mapperCierreCajaDto.dtoToCierreCaja(cuadreCajaDto, establecimiento);
         CierreCaja cierreCajaGuardado = cierreCajaRepository.save(cierreCaja);
+        establecimientoRepository.actualizarEstadoEstablecimiento(ESTADO_ESTABLECIMIENTO_CERRADO, establecimiento.getIdEstablecimiento()); // El cuadre de caja es el que cierra el establecimiento
 
         return ResponseEntity.ok(mapperCierreCajaDto.cierreCajaToDto(cierreCajaGuardado));
     }

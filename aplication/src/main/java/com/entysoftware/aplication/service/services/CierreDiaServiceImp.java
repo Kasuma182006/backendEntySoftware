@@ -10,7 +10,6 @@ import com.entysoftware.aplication.model.dto.cierreCaja.CierreDiaDto;
 import com.entysoftware.aplication.repository.BaseInicialRepository;
 import com.entysoftware.aplication.repository.CostosRepository;
 import com.entysoftware.aplication.repository.EncabezadoPedidosRepository;
-import com.entysoftware.aplication.repository.EstablecimientoRepository;
 import com.entysoftware.aplication.service.interfaces.CierreDiaInterface;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +21,11 @@ public class CierreDiaServiceImp implements CierreDiaInterface {
     private final EncabezadoPedidosRepository encabezadoPedidosRepository;
     private final CostosRepository costosRepository;
     private final BaseInicialRepository baseInicialRepository;
-    private final EstablecimientoRepository establecimientoRepository;
 
-    public CierreDiaServiceImp(EstablecimientoRepository establecimientoRepository,BaseInicialRepository baseInicialRepository,EncabezadoPedidosRepository encabezadoPedidosRepository,CostosRepository costosRepository){
+    public CierreDiaServiceImp(BaseInicialRepository baseInicialRepository,EncabezadoPedidosRepository encabezadoPedidosRepository,CostosRepository costosRepository){
         this.encabezadoPedidosRepository = encabezadoPedidosRepository;
         this.costosRepository = costosRepository;
         this.baseInicialRepository = baseInicialRepository;
-        this.establecimientoRepository = establecimientoRepository;
     }
 
     public ResponseEntity<CierreDiaDto> cierreDia(Integer idEstablecimiento){
@@ -38,7 +35,6 @@ public class CierreDiaServiceImp implements CierreDiaInterface {
         CostosDelDia costos = calcularCostosDelDia(idEstablecimiento, fechaHoy);
 
         CierreDiaDto cierreDelDia = construirCierreDiaDto(idEstablecimiento, fechaHoy, ventas, costos);
-        establecimientoRepository.actualizarEstadoEstablecimiento("CERRADO", idEstablecimiento);
         
         return ResponseEntity.ok(cierreDelDia);
     }
