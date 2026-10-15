@@ -62,17 +62,19 @@ public class CierreController {
 
     @Operation(
         summary = "Registrar el cuadre de caja",
-        description = "Guarda el cuadre de caja del establecimiento indicado en el cuerpo de la petición, con las cantidades contadas en transferencia, efectivo y tarjeta, y cambia el estado del establecimiento a CERRADO. La fecha la asigna el backend automáticamente."
+        description = "Guarda el cuadre de caja del establecimiento indicado en el cuerpo de la petición, con las cantidades contadas en transferencia, efectivo y tarjeta, cambia el estado del establecimiento a CERRADO y devuelve el PDF del cierre de caja "
+            + "(ventas, costos, base inicial, domicilios y la comparación esperado vs. contado por método de pago). La fecha la asigna el backend automáticamente. "
+            + "La respuesta exitosa es un archivo application/pdf (no JSON): el front debe pedirla como blob. El nombre del archivo viene en el header Content-Disposition. Los errores siguen llegando en JSON."
     )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Cuadre de caja registrado correctamente."),
+        @ApiResponse(responseCode = "200", description = "Cuadre de caja registrado correctamente. El cuerpo es el PDF del cierre de caja.", content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary"))),
         @ApiResponse(responseCode = "400", description = "El cuerpo de la petición es inválido, está mal formado, o algún campo no pasó las validaciones (obligatorio o valor negativo). El mensaje puede venir como una lista con un texto por cada campo inválido.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class), examples = @ExampleObject(value = "{\"time\":\"2026-09-16T18:05:00.123\",\"status\":\"400\",\"error\":\"Bad Request\",\"mensaje\":[\"El campo cantidadEfectivo no puede ser un valor negativo\",\"El campo idEstablecimiento es obligatorio\"],\"path\":\"/cierre/cuadre-caja\"}"))),
         @ApiResponse(responseCode = "404", description = "El establecimiento indicado no existe.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class), examples = @ExampleObject(value = "{\"time\":\"2026-09-16T18:05:00.123\",\"status\":\"404\",\"error\":\"No Found\",\"mensaje\":\"El establecimiento con ID 1 no existe\",\"path\":\"/cierre/cuadre-caja\"}"))),
         @ApiResponse(responseCode = "409", description = "Ya existe un cuadre de caja registrado hoy para ese establecimiento.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class), examples = @ExampleObject(value = "{\"time\":\"2026-09-16T18:05:00.123\",\"status\":\"409\",\"error\":\"Conflict\",\"mensaje\":\"Ya existe un cuadre de caja para el establecimiento con ID 1 en la fecha 2026-09-16\",\"path\":\"/cierre/cuadre-caja\"}"))),
         @ApiResponse(responseCode = "500", description = "Error interno inesperado al registrar el cuadre de caja.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class)))
     })
     @PostMapping("/cuadre-caja")
-    public ResponseEntity<CuadreCajaDto> cuadreCaja(@Valid @RequestBody CuadreCajaDto cuadreCaja) {
+    public ResponseEntity<byte[]> cuadreCaja(@Valid @RequestBody CuadreCajaDto cuadreCaja) {
         return cierreCajaInterface.cuadreCaja(cuadreCaja);
     }
 

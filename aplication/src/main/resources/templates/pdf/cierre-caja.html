@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="'Cierre de caja #' + ${reporte.idCierreCaja()}">Cierre de caja</title>
+    <style>
+        @page {
+            size: letter;
+            margin: 14mm 16mm;
+            @bottom-center {
+                content: "Página " counter(page) " de " counter(pages);
+                font-family: Helvetica, sans-serif;
+                font-size: 8pt;
+                color: #6b7280;
+            }
+        }
+        body { font-family: Helvetica, sans-serif; font-size: 10pt; color: #1f2937; }
+        h1 { font-size: 18pt; margin: 0 0 2mm 0; }
+        h2 { font-size: 11pt; margin: 5mm 0 1.5mm 0; padding-bottom: 1mm; border-bottom: 1px solid #d1d5db; text-transform: uppercase; color: #374151; }
+        .subtitulo { color: #6b7280; margin: 0; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { padding: 1.2mm 2mm; }
+        th { text-align: left; background-color: #f3f4f6; font-size: 9pt; color: #374151; }
+        .datos td { border-bottom: 1px solid #f3f4f6; }
+        .datos td.etiqueta { color: #4b5563; }
+        .num { text-align: right; }
+        .fila-total td { font-weight: bold; border-top: 1px solid #9ca3af; }
+        .cuadre td { border-bottom: 1px solid #e5e7eb; }
+        .CUADRA { color: #15803d; }
+        .FALTANTE { color: #b91c1c; }
+        .SOBRANTE { color: #b45309; }
+        .resultado { margin-top: 4mm; padding: 3mm; border: 1px solid #d1d5db; font-size: 11pt; font-weight: bold; }
+        .nota { font-size: 8pt; color: #6b7280; margin-top: 1.5mm; }
+        .firmas { margin-top: 16mm; page-break-inside: avoid; }
+        .firmas td { width: 50%; padding: 0 8mm; text-align: center; font-size: 9pt; color: #4b5563; }
+        .linea-firma { border-top: 1px solid #374151; padding-top: 1.5mm; }
+    </style>
+</head>
+<body>
+
+    <h1>Cierre de caja</h1>
+    <p class="subtitulo" th:text="${reporte.nombreEstablecimiento()}">Establecimiento</p>
+
+    <table class="datos" style="margin-top: 4mm;">
+        <tr>
+            <td class="etiqueta">N.º de cuadre</td>
+            <td th:text="${reporte.idCierreCaja()}">1</td>
+            <td class="etiqueta">Fecha</td>
+            <td th:text="${#temporals.format(reporte.fechaCuadre(), 'dd/MM/yyyy')}">01/01/2026</td>
+        </tr>
+        <tr>
+            <td class="etiqueta">Apertura de caja</td>
+            <td th:text="${reporte.horaApertura() != null ? #temporals.format(reporte.horaApertura(), 'hh:mm a') : '-'}">08:00 AM</td>
+            <td class="etiqueta">Hora del cuadre</td>
+            <td th:text="${#temporals.format(reporte.fechaCuadre(), 'hh:mm a')}">10:00 PM</td>
+        </tr>
+    </table>
+
+    <h2>Ventas del día</h2>
+    <table class="datos">
+        <tr><td class="etiqueta">Pedidos realizados</td><td class="num" th:text="${cierre.cantidadPedidosRealizadosHoy}">0</td></tr>
+        <tr><td class="etiqueta">Ventas en efectivo</td><td class="num" th:text="'$ ' + ${#numbers.formatInteger(cierre.cantidadIngresosTotalesEnEfectivoSinRestarCostos, 1, 'POINT')}">$ 0</td></tr>
+        <tr><td class="etiqueta">Ventas por transferencia</td><td class="num" th:text="'$ ' + ${#numbers.formatInteger(cierre.cantidadIngresosEnTrasferenciaSinRestarCostos, 1, 'POINT')}">$ 0</td></tr>
+        <tr><td class="etiqueta">Ventas con tarjeta</td><td class="num" th:text="'$ ' + ${#numbers.formatInteger(cierre.cantidadIngresosEnTarjeta, 1, 'POINT')}">$ 0</td></tr>
+        <tr class="fila-total"><td>Total ventas</td><td class="num" th:text="'$ ' + ${#numbers.formatInteger(reporte.ventasTotales(), 1, 'POINT')}">$ 0</td></tr>
+    </table>
+    <p class="nota">Los valores de ventas no incluyen domicilios.</p>
+
+    <table class="datos" style="margin-top: 3mm;">
+        <tr><td class="etiqueta">Base inicial</td><td class="num" th:text="'$ ' + ${#numbers.formatInteger(cierre.baseInicialDelDia, 1, 'POINT')}">$ 0</td></tr>
+        <tr><td class="etiqueta">Domicilios (corresponden al domiciliario)</td><td class="num" th:text="'$ ' + ${#numbers.formatInteger(cierre.cantidadDomicilios, 1, 'POINT')}">$ 0</td></tr>
+    </table>
+
+    <h2>Costos y gastos</h2>
+    <table class="datos">
+        <tr><td class="etiqueta">Pagados en efectivo</td><td class="num" th:text="'$ ' + ${#numbers.formatInteger(cierre.cantidadCostosEnEfectivo, 1, 'POINT')}">$ 0</td></tr>
+        <tr><td class="etiqueta">Pagados por transferencia</td><td class="num" th:text="'$ ' + ${#numbers.formatInteger(cierre.cantidadCostosEnTrasferencia, 1, 'POINT')}">$ 0</td></tr>
+        <tr class="fila-total"><td>Total costos</td><td class="num" th:text="'$ ' + ${#numbers.formatInteger(reporte.costosTotales(), 1, 'POINT')}">$ 0</td></tr>
+    </table>
+
+    <h2>Cuadre de caja</h2>
+    <table class="cuadre">
+        <tr>
+            <th>Método</th>
+            <th class="num">Esperado</th>
+            <th class="num">Contado</th>
+            <th class="num">Diferencia</th>
+        </tr>
+        <tr th:each="fila : ${reporte.filasCuadre()}">
+            <td th:text="${fila.metodo()}">Efectivo</td>
+            <td class="num" th:text="'$ ' + ${#numbers.formatInteger(fila.esperado(), 1, 'POINT')}">$ 0</td>
+            <td class="num" th:text="'$ ' + ${#numbers.formatInteger(fila.contado(), 1, 'POINT')}">$ 0</td>
+            <td class="num" th:classappend="${fila.estado()}"
+                th:text="${fila.diferencia() == 0} ? 'Cuadra' : (${fila.diferencia() &lt; 0} ? '- $ ' : '+ $ ') + ${#numbers.formatInteger(fila.diferenciaAbsoluta(), 1, 'POINT')}">Cuadra</td>
+        </tr>
+        <tr class="fila-total" th:with="total=${reporte.filaTotal()}">
+            <td>Total</td>
+            <td class="num" th:text="'$ ' + ${#numbers.formatInteger(total.esperado(), 1, 'POINT')}">$ 0</td>
+            <td class="num" th:text="'$ ' + ${#numbers.formatInteger(total.contado(), 1, 'POINT')}">$ 0</td>
+            <td class="num" th:classappend="${total.estado()}"
+                th:text="${total.diferencia() == 0} ? 'Cuadra' : (${total.diferencia() &lt; 0} ? '- $ ' : '+ $ ') + ${#numbers.formatInteger(total.diferenciaAbsoluta(), 1, 'POINT')}">Cuadra</td>
+        </tr>
+    </table>
+    <p class="nota">Efectivo esperado = base inicial + ventas en efectivo - costos en efectivo. Transferencia esperada = ventas por transferencia - costos por transferencia.</p>
+
+    <div class="resultado" th:with="total=${reporte.filaTotal()}" th:classappend="${total.estado()}">
+        <span th:if="${total.estado() == 'CUADRA'}">La caja cuadra.</span>
+        <span th:if="${total.estado() == 'FALTANTE'}" th:text="'Faltante en caja: $ ' + ${#numbers.formatInteger(total.diferenciaAbsoluta(), 1, 'POINT')}">Faltante</span>
+        <span th:if="${total.estado() == 'SOBRANTE'}" th:text="'Sobrante en caja: $ ' + ${#numbers.formatInteger(total.diferenciaAbsoluta(), 1, 'POINT')}">Sobrante</span>
+    </div>
+
+    <table class="firmas">
+        <tr>
+            <td><div class="linea-firma">Responsable del cuadre</div></td>
+            <td><div class="linea-firma">Administrador</div></td>
+        </tr>
+    </table>
+
+    <p class="nota" style="margin-top: 5mm;" th:text="'Generado el ' + ${#temporals.format(fechaGeneracion, 'dd/MM/yyyy hh:mm a')}">Generado el</p>
+
+</body>
+</html>

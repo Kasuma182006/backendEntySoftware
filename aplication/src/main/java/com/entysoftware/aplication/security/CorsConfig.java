@@ -2,6 +2,7 @@ package com.entysoftware.aplication.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.lang.NonNull; // En Spring Boot 3 suele mapear desde org.springframework.lang o jakarta
@@ -22,6 +23,7 @@ public class CorsConfig {
                         .allowedOriginPatterns(TODOS_LOS_ORIGENES)
                         .allowedMethods(METODOS_HTTP_PERMITIDOS)
                         .allowedHeaders(TODOS_LOS_ORIGENES)
+                        .exposedHeaders(HttpHeaders.CONTENT_DISPOSITION) // Para que el front lea el nombre de los PDF descargados
                         .allowCredentials(true);
             }
         };

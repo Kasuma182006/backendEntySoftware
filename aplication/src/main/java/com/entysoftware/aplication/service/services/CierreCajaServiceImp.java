@@ -4,6 +4,9 @@ import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +15,19 @@ import com.entysoftware.aplication.error.ObjetosNoEncontradosExepcion;
 import com.entysoftware.aplication.error.RangoFechasInvalidoException;
 import com.entysoftware.aplication.mapper.MapperCierreCajaDto;
 import com.entysoftware.aplication.model.dto.PaginaDto;
+import com.entysoftware.aplication.model.dto.cierreCaja.CierreDiaDto;
 import com.entysoftware.aplication.model.dto.cierreCaja.CuadreCajaDto;
+import com.entysoftware.aplication.model.dto.cierreCaja.ReporteCierreCaja;
+import com.entysoftware.aplication.model.models.BaseInicial;
 import com.entysoftware.aplication.model.models.CierreCaja;
 import com.entysoftware.aplication.model.models.Establecimiento;
+import com.entysoftware.aplication.repository.BaseInicialRepository;
 import com.entysoftware.aplication.repository.CierreCajaRepository;
 import com.entysoftware.aplication.repository.EstablecimientoRepository;
 import com.entysoftware.aplication.service.interfaces.CierreCajaInterface;
+import com.entysoftware.aplication.service.interfaces.CierreDiaInterface;
 import com.entysoftware.aplication.utils.ConsultaPaginadaUtils;
+import com.entysoftware.aplication.utils.GeneradorPdfCierreCaja;
 import com.entysoftware.aplication.utils.RangoFechas;
 
 import jakarta.transaction.Transactional;
@@ -35,16 +44,30 @@ public class CierreCajaServiceImp implements CierreCajaInterface {
 
     private final EstablecimientoRepository establecimientoRepository;
 
+    private final BaseInicialRepository baseInicialRepository;
+
+    private final CierreDiaInterface cierreDiaInterface;
+
+    private final GeneradorPdfCierreCaja generadorPdfCierreCaja;
+
     public CierreCajaServiceImp(CierreCajaRepository cierreCajaRepository, MapperCierreCajaDto mapperCierreCajaDto,
-            EstablecimientoRepository establecimientoRepository) {
+            EstablecimientoRepository establecimientoRepository, BaseInicialRepository baseInicialRepository,
+            CierreDiaInterface cierreDiaInterface, GeneradorPdfCierreCaja generadorPdfCierreCaja) {
         this.cierreCajaRepository = cierreCajaRepository;
         this.mapperCierreCajaDto = mapperCierreCajaDto;
         this.establecimientoRepository = establecimientoRepository;
+        this.baseInicialRepository = baseInicialRepository;
+        this.cierreDiaInterface = cierreDiaInterface;
+        this.generadorPdfCierreCaja = generadorPdfCierreCaja;
     }
 
+    /**
+     * Registra el cuadre de caja, cierra el establecimiento y devuelve el PDF del cierre.
+     * Si el PDF no se puede generar, la transacción se revierte y el día no queda cerrado.
+     */
     @SuppressWarnings("null")
     @Transactional
-    public ResponseEntity<CuadreCajaDto> cuadreCaja(CuadreCajaDto cuadreCajaDto) {
+    public ResponseEntity<byte[]> cuadreCaja(CuadreCajaDto cuadreCajaDto) {
         Establecimiento establecimiento = establecimientoRepository.findById(cuadreCajaDto.getIdEstablecimiento())
             .orElseThrow(() -> new ObjetosNoEncontradosExepcion("El establecimiento con ID " + cuadreCajaDto.getIdEstablecimiento() + " no existe"));
 
@@ -57,7 +80,29 @@ public class CierreCajaServiceImp implements CierreCajaInterface {
         CierreCaja cierreCajaGuardado = cierreCajaRepository.save(cierreCaja);
         establecimientoRepository.actualizarEstadoEstablecimiento(ESTADO_ESTABLECIMIENTO_CERRADO, establecimiento.getIdEstablecimiento()); // El cuadre de caja es el que cierra el establecimiento
 
-        return ResponseEntity.ok(mapperCierreCajaDto.cierreCajaToDto(cierreCajaGuardado));
+        byte[] pdf = generadorPdfCierreCaja.generar(construirReporte(establecimiento, cierreCajaGuardado, hoy));
+        String nombreArchivo = "cierre-caja-" + establecimiento.getIdEstablecimiento() + "-" + hoy + ".pdf";
+
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_PDF)
+            .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline().filename(nombreArchivo).build().toString())
+            .body(pdf);
+    }
+
+    private ReporteCierreCaja construirReporte(Establecimiento establecimiento, CierreCaja cierreCaja, LocalDate hoy) {
+        CierreDiaDto cierreDia = cierreDiaInterface.cierreDia(establecimiento.getIdEstablecimiento()).getBody();
+        BaseInicial baseInicial = baseInicialRepository.validarExistenciaBaseInicial(establecimiento.getIdEstablecimiento(), hoy);
+
+        return new ReporteCierreCaja(
+            cierreCaja.getId(),
+            establecimiento.getNombreEstablecimiento(),
+            cierreCaja.getFecha(),
+            baseInicial != null ? baseInicial.getHora() : null,
+            cierreDia,
+            cierreCaja.getCantidadEfectivo(),
+            cierreCaja.getCantidadTransferencia(),
+            cierreCaja.getCantidadTarjeta()
+        );
     }
 
     /**

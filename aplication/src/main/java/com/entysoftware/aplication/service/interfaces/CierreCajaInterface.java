@@ -9,7 +9,7 @@ import com.entysoftware.aplication.model.dto.cierreCaja.CuadreCajaDto;
 
 public interface CierreCajaInterface {
 
-    public ResponseEntity<CuadreCajaDto> cuadreCaja(CuadreCajaDto cuadreCaja);
+    public ResponseEntity<byte[]> cuadreCaja(CuadreCajaDto cuadreCaja);
 
     public ResponseEntity<PaginaDto<CuadreCajaDto>> listarCierresCaja(Integer idEstablecimiento, LocalDate fechaInicio,
             LocalDate fechaFin, int pagina, int tamano);
