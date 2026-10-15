@@ -57,7 +57,8 @@ public class CierreDiaServiceImp implements CierreDiaInterface {
 
     private CierreDiaDto construirCierreDiaDto(Integer idEstablecimiento, LocalDate fechaHoy, VentasDelDia ventas, CostosDelDia costos){
         Integer ventasEnTrasferenciaNeta = ventas.ventasTotalesTrasferencia() - costos.costosTotalesTrasferencia();
-        Integer ventasEnEfectivoNeta = ventas.ventasTotalesEfectivo() - costos.costosTotalesEfectivo();
+        // La base inicial está físicamente en la caja, así que hace parte del efectivo esperado al cuadrar
+        Integer ventasEnEfectivoNeta = ventas.baseInicial() + ventas.ventasTotalesEfectivo() - costos.costosTotalesEfectivo();
 
         return new CierreDiaDto(encabezadoPedidosRepository.contarPedidosDelDia(idEstablecimiento, fechaHoy),
                                  ventas.ventasTotalesTrasferencia,
@@ -67,7 +68,8 @@ public class CierreDiaServiceImp implements CierreDiaInterface {
                                  costos.costosTotalesTrasferencia,
                                  ventasEnEfectivoNeta,
                                  ventasEnTrasferenciaNeta,
-                                 encabezadoPedidosRepository.sumarIngresosTarjetaDelDia(idEstablecimiento, fechaHoy)
+                                 encabezadoPedidosRepository.sumarIngresosTarjetaDelDia(idEstablecimiento, fechaHoy),
+                                 encabezadoPedidosRepository.sumarIngresoDomicilio(idEstablecimiento, fechaHoy)
                                 );
     }
 

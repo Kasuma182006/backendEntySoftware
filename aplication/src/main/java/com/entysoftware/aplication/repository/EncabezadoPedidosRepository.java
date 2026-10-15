@@ -78,7 +78,7 @@ public interface EncabezadoPedidosRepository  extends JpaRepository<EncabezadoPe
 
     @Query("SELECT COALESCE(SUM(u.valorDomicilio), 0) FROM EncabezadoPedido u " +
        "WHERE u.idMesa.idEstablecimiento = :idEstablecimiento " +
-       "AND u.fechaPedido = :fecha")
+       "AND u.fechaPedido = :fecha AND u.estadoPedido = 'PAGO'")
     Integer sumarIngresoDomicilio(
         @Param("idEstablecimiento") Integer idEstablecimiento,
         @Param("fecha") LocalDate fecha

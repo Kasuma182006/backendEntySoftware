@@ -26,8 +26,8 @@ public class CierreDiaDto {
 
     @Schema(description = "Total de costos/gastos pagados por transferencia durante el día.", example = "20000", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer cantidadCostosEnTrasferencia;
-
-    @Schema(description = "Ingresos netos en efectivo del día, luego de restar los costos pagados en efectivo.", example = "260000", requiredMode = Schema.RequiredMode.REQUIRED)
+    
+    @Schema(description = "Efectivo que debería haber en caja al cierre: base inicial + ingresos en efectivo - costos pagados en efectivo. Es el valor a comparar con el efectivo contado en el cuadre.", example = "310000", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer cantidadIngresosTotalesEnEfectivoNeta;
 
     @Schema(description = "Ingresos netos por transferencia del día, luego de restar los costos pagados por transferencia.", example = "430000", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -35,6 +35,9 @@ public class CierreDiaDto {
 
     @Schema(description = "Ingresos netos por tarjeta", example = "30000",requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer cantidadIngresosEnTarjeta;
+
+    @Schema(description = "Total cobrado por domicilios en los pedidos pagados del día. No hace parte de los ingresos anteriores porque corresponde al domiciliario.", example = "25000", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Integer cantidadDomicilios;
 
 
 }
