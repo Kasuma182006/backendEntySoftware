@@ -121,6 +121,21 @@ class CierreCajaServiceImpTest {
         }
 
         @Test
+        void givenSinBaseInicialHoy_whenCuadreCaja_thenLanzaNoEncontradoYNoGuardaNiCierra() {
+            // Arrange
+            CuadreCajaDto dto = new CuadreCajaDto(null, 1, 0, 0, 0, null);
+            Establecimiento establecimiento = new Establecimiento(1, "Local", "123", LocalDate.now(), "ABIERTO");
+            when(establecimientoRepository.findById(1)).thenReturn(Optional.of(establecimiento));
+            when(cierreCajaRepository.existsPorEstablecimientoYFecha(eq(1), any(LocalDate.class))).thenReturn(false);
+            when(cierreDiaInterface.cierreDia(1)).thenThrow(new ObjetosNoEncontradosExepcion("No se ha registrado la base inicial"));
+
+            // Act & Assert
+            assertThrows(ObjetosNoEncontradosExepcion.class, () -> cierreCajaServiceImp.cuadreCaja(dto));
+            verify(cierreCajaRepository, never()).save(any());
+            verify(establecimientoRepository, never()).actualizarEstadoEstablecimiento(any(), anyInt());
+        }
+
+        @Test
         void givenEstablecimientoInexistente_whenCuadreCaja_thenLanzaNoEncontradoYNoCierra() {
             // Arrange
             CuadreCajaDto dto = new CuadreCajaDto(null, 99, 0, 0, 0, null);

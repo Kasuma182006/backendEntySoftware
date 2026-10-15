@@ -51,7 +51,8 @@ public class CierreController {
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Cierre de caja calculado correctamente."),
-        @ApiResponse(responseCode = "500", description = "Error interno inesperado al calcular el cierre de caja (por ejemplo, si aún no se ha registrado la base inicial del día).", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class)))
+        @ApiResponse(responseCode = "404", description = "Aún no se ha registrado la base inicial del día para el establecimiento.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class), examples = @ExampleObject(value = "{\"time\":\"2026-09-16T18:05:00.123\",\"status\":\"404\",\"error\":\"No Found\",\"mensaje\":\"No se ha registrado la base inicial de hoy (2026-09-16) para el establecimiento con ID 1\",\"path\":\"/cierre/cierre-dia/1\"}"))),
+        @ApiResponse(responseCode = "500", description = "Error interno inesperado al calcular el cierre de caja.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class)))
     })
     @GetMapping("/cierre-dia/{idEstablecimiento}")
     public ResponseEntity<CierreDiaDto> cierreDia(
@@ -69,7 +70,7 @@ public class CierreController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Cuadre de caja registrado correctamente. El cuerpo es el PDF del cierre de caja.", content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary"))),
         @ApiResponse(responseCode = "400", description = "El cuerpo de la petición es inválido, está mal formado, o algún campo no pasó las validaciones (obligatorio o valor negativo). El mensaje puede venir como una lista con un texto por cada campo inválido.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class), examples = @ExampleObject(value = "{\"time\":\"2026-09-16T18:05:00.123\",\"status\":\"400\",\"error\":\"Bad Request\",\"mensaje\":[\"El campo cantidadEfectivo no puede ser un valor negativo\",\"El campo idEstablecimiento es obligatorio\"],\"path\":\"/cierre/cuadre-caja\"}"))),
-        @ApiResponse(responseCode = "404", description = "El establecimiento indicado no existe.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class), examples = @ExampleObject(value = "{\"time\":\"2026-09-16T18:05:00.123\",\"status\":\"404\",\"error\":\"No Found\",\"mensaje\":\"El establecimiento con ID 1 no existe\",\"path\":\"/cierre/cuadre-caja\"}"))),
+        @ApiResponse(responseCode = "404", description = "El establecimiento indicado no existe, o aún no se ha registrado la base inicial del día. En ambos casos no se guarda el cuadre.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class), examples = @ExampleObject(value = "{\"time\":\"2026-09-16T18:05:00.123\",\"status\":\"404\",\"error\":\"No Found\",\"mensaje\":\"El establecimiento con ID 1 no existe\",\"path\":\"/cierre/cuadre-caja\"}"))),
         @ApiResponse(responseCode = "409", description = "Ya existe un cuadre de caja registrado hoy para ese establecimiento.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class), examples = @ExampleObject(value = "{\"time\":\"2026-09-16T18:05:00.123\",\"status\":\"409\",\"error\":\"Conflict\",\"mensaje\":\"Ya existe un cuadre de caja para el establecimiento con ID 1 en la fecha 2026-09-16\",\"path\":\"/cierre/cuadre-caja\"}"))),
         @ApiResponse(responseCode = "500", description = "Error interno inesperado al registrar el cuadre de caja.", content = @Content(schema = @Schema(implementation = ControllerAdviceDto.class)))
     })

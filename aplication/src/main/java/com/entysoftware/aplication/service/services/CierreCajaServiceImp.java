@@ -76,11 +76,14 @@ public class CierreCajaServiceImp implements CierreCajaInterface {
             throw new DatosDuplicados("Ya existe un cuadre de caja para el establecimiento con ID " + establecimiento.getIdEstablecimiento() + " en la fecha " + hoy);
         }
 
+        // Se calcula antes de guardar: si falta la base inicial del día, falla aquí sin registrar el cuadre
+        CierreDiaDto cierreDia = cierreDiaInterface.cierreDia(establecimiento.getIdEstablecimiento()).getBody();
+
         CierreCaja cierreCaja = mapperCierreCajaDto.dtoToCierreCaja(cuadreCajaDto, establecimiento);
         CierreCaja cierreCajaGuardado = cierreCajaRepository.save(cierreCaja);
         establecimientoRepository.actualizarEstadoEstablecimiento(ESTADO_ESTABLECIMIENTO_CERRADO, establecimiento.getIdEstablecimiento()); // El cuadre de caja es el que cierra el establecimiento
 
-        byte[] pdf = generadorPdfCierreCaja.generar(construirReporte(establecimiento, cierreCajaGuardado, hoy));
+        byte[] pdf = generadorPdfCierreCaja.generar(construirReporte(establecimiento, cierreCajaGuardado, cierreDia, hoy));
         String nombreArchivo = "cierre-caja-" + establecimiento.getIdEstablecimiento() + "-" + hoy + ".pdf";
 
         return ResponseEntity.ok()
@@ -89,8 +92,7 @@ public class CierreCajaServiceImp implements CierreCajaInterface {
             .body(pdf);
     }
 
-    private ReporteCierreCaja construirReporte(Establecimiento establecimiento, CierreCaja cierreCaja, LocalDate hoy) {
-        CierreDiaDto cierreDia = cierreDiaInterface.cierreDia(establecimiento.getIdEstablecimiento()).getBody();
+    private ReporteCierreCaja construirReporte(Establecimiento establecimiento, CierreCaja cierreCaja, CierreDiaDto cierreDia, LocalDate hoy) {
         BaseInicial baseInicial = baseInicialRepository.validarExistenciaBaseInicial(establecimiento.getIdEstablecimiento(), hoy);
 
         return new ReporteCierreCaja(

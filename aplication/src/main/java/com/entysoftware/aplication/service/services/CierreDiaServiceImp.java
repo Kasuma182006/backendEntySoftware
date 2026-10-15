@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.entysoftware.aplication.error.ObjetosNoEncontradosExepcion;
 import com.entysoftware.aplication.model.dto.cierreCaja.CierreDiaDto;
 import com.entysoftware.aplication.repository.BaseInicialRepository;
 import com.entysoftware.aplication.repository.CostosRepository;
@@ -43,6 +44,9 @@ public class CierreDiaServiceImp implements CierreDiaInterface {
         Integer ventasTotalesEfectivo = encabezadoPedidosRepository.sumarIngresosEfectivoDelDia(idEstablecimiento, fechaHoy);
         Integer ventasTotalesTrasferencia = encabezadoPedidosRepository.sumarIngresosTransferenciaDelDia(idEstablecimiento, fechaHoy);
         Integer baseInicial = baseInicialRepository.buscarValorBaseInicialHoy(idEstablecimiento, fechaHoy);
+        if (baseInicial == null) {
+            throw new ObjetosNoEncontradosExepcion("No se ha registrado la base inicial de hoy (" + fechaHoy + ") para el establecimiento con ID " + idEstablecimiento);
+        }
 
         return new VentasDelDia(ventasTotalesEfectivo, ventasTotalesTrasferencia, baseInicial);
     }

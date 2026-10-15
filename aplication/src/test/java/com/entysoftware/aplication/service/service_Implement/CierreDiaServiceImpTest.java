@@ -1,6 +1,7 @@
 package com.entysoftware.aplication.service.service_Implement;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.entysoftware.aplication.error.ObjetosNoEncontradosExepcion;
 import com.entysoftware.aplication.model.dto.cierreCaja.CierreDiaDto;
 import com.entysoftware.aplication.repository.BaseInicialRepository;
 import com.entysoftware.aplication.repository.CostosRepository;
@@ -63,6 +65,15 @@ class CierreDiaServiceImpTest {
             assertEquals(150000, cierre.getCantidadIngresosEnTarjeta());
             assertEquals(25000, cierre.getCantidadDomicilios());
             assertEquals(34, cierre.getCantidadPedidosRealizadosHoy());
+        }
+
+        @Test
+        void givenSinBaseInicialHoy_whenCierreDia_thenLanzaNoEncontrado() {
+            // Arrange
+            when(baseInicialRepository.buscarValorBaseInicialHoy(eq(1), any(LocalDate.class))).thenReturn(null);
+
+            // Act & Assert
+            assertThrows(ObjetosNoEncontradosExepcion.class, () -> cierreDiaServiceImp.cierreDia(1));
         }
     }
 }
