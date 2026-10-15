@@ -31,9 +31,6 @@
         .SOBRANTE { color: #b45309; }
         .resultado { margin-top: 4mm; padding: 3mm; border: 1px solid #d1d5db; font-size: 11pt; font-weight: bold; }
         .nota { font-size: 8pt; color: #6b7280; margin-top: 1.5mm; }
-        .firmas { margin-top: 16mm; page-break-inside: avoid; }
-        .firmas td { width: 50%; padding: 0 8mm; text-align: center; font-size: 9pt; color: #4b5563; }
-        .linea-firma { border-top: 1px solid #374151; padding-top: 1.5mm; }
     </style>
 </head>
 <body>
@@ -108,13 +105,6 @@
         <span th:if="${total.estado() == 'FALTANTE'}" th:text="'Faltante en caja: $ ' + ${#numbers.formatInteger(total.diferenciaAbsoluta(), 1, 'POINT')}">Faltante</span>
         <span th:if="${total.estado() == 'SOBRANTE'}" th:text="'Sobrante en caja: $ ' + ${#numbers.formatInteger(total.diferenciaAbsoluta(), 1, 'POINT')}">Sobrante</span>
     </div>
-
-    <table class="firmas">
-        <tr>
-            <td><div class="linea-firma">Responsable del cuadre</div></td>
-            <td><div class="linea-firma">Administrador</div></td>
-        </tr>
-    </table>
 
     <p class="nota" style="margin-top: 5mm;" th:text="'Generado el ' + ${#temporals.format(fechaGeneracion, 'dd/MM/yyyy hh:mm a')}">Generado el</p>
 
